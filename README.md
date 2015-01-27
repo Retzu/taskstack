@@ -25,16 +25,16 @@ A first in, first out queue of tasks assigned to an assignee. An assignee might 
 
 These are the rules that Taskstack establishes
 ----------------------------------------------
-1. Each member of the group can only work on one task at a time. 
-2. A task can never be put back in the queue once it has been worked on. Neither to where it was taken from, nor at the back of the queue. It can only be paused or finished.
-3. Before adding a task to a queue, the taskmaster must always be presented with a visualization of the assignees queue. The act of assigning a task must be as visible as possible. No anonymous dropdown menus with lists of assignees. Drag & drop mechanics are recommended. I'm almost inclined to say *make it a chore*.
-4. Each queue has a limited number of tasks (ideally <10).
-5. Queues or assignees must be colour-coded according to the size of the queue (e. g. green = 2 tasks, yellow = 4 tasks, red = 7 tasks).
-6. To give people stuff to do you must use this tool and only this tool. No "could you quickly do this and that" or mails without a task in the queue. If as an assignee you get a task by mail, make a task in Taskstack and add it to your own queue.
-7. A single task can be of any complexity. Based on that, it's the taskmaster's job to manage and distribute tasks evenly and fairly.
-8. As a taskmaster you can only remove tasks from anywhere within a queue or add tasks at the back of the queue. If a task was removed and the same task is added again later, the assignee will have to confirm that action.
-8. Taskmasters will be notified by changes to queues that were made by their assignee. Assignees will be notified by changes to their queue that weren't made by themselves.
-9. No priorities. The only form of priority implicitly stems from the order tasks are in a queue.
+1. Each member of the group can only work on **one task at a time**. 
+2. A task can **never be put back** in the queue once it has been worked on. Neither to where it was taken from, nor at the back of the queue. It can **only be paused or finished*.
+3. Before adding a task to a queue, the taskmaster must always be presented with a **visualization of the assignees queue**. The act of assigning a task must be as visible as possible. No anonymous dropdown menus with lists of assignees. **Drag & drop mechanics are recommended**. I'm almost inclined to say *make it a chore*.
+4. Each queue has a **limited number of tasks** (ideally <10).
+5. Queues or assignees must be **colour-coded** according to the size of the queue (e. g. green = 2 tasks, yellow = 4 tasks, red = 7 tasks).
+6. To give people stuff to do you must use this tool and **only this tool**. No "could you quickly do this and that" or mails without a task in the queue. If as an assignee you get a task by mail, make a task in Taskstack and add it to your own queue.
+7. A single task can be of **any complexity**. Based on that, it's the **taskmaster's job** to manage and distribute tasks evenly and fairly.
+8. As a taskmaster you can only **remove tasks from anywhere within a queue** or add tasks **at the back of the queue**. If a task was removed and the same task is added again later, the assignee will have to **confirm that action**.
+8. Taskmasters will be **notified of changes to queues** that were made by their assignee. Assignees will be notified of changes to their queue that weren't made by themselves.
+9. **No priorities**. The only form of priority implicitly stems from the order tasks are in a queue.
 
 Why did you call it 'Taskstack' when it's clearly a queue dummy!
 ----------------------------------------------------------------
