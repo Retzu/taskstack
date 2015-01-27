@@ -20,6 +20,8 @@ A member of the group with a task queue. Members are always assignees.
 An assignee who can create new tasks and/or assign them to other members or themself.
 ### Task
 A thing that needs to be done.
+### Queue
+A first in, first out queue of tasks.
 
 These are the rules that Taskstack establishes
 ----------------------------------------------
