@@ -19,7 +19,7 @@ A member of the group with a task queue. Members are always assignees.
 ### Taskmaster
 An assignee who can create new tasks and/or assign them to other members or themself.
 ### Task
-A thing that need to be done.
+A thing that needs to be done.
 
 These are the rules that Taskstack establishes
 ----------------------------------------------
