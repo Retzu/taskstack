@@ -52,3 +52,6 @@ docs/_build/
 
 # PyBuilder
 target/
+
+# db directory for docker postgresql
+db/
