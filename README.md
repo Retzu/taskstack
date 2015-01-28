@@ -32,7 +32,7 @@ These are the rules that Taskstack establishes
 5. Queues or assignees must be **colour-coded** according to the size of the queue (e. g. green = 2 tasks, yellow = 4 tasks, red = 7 tasks).
 6. To give people stuff to do you must use this tool and **only this tool**. No "could you quickly do this and that" or mails without a task in the queue. If as an assignee you get a task by mail, make a task in Taskstack and add it to your own queue.
 7. A single task can be of **any complexity**. Based on that, it's the **taskmaster's job** to manage and distribute tasks evenly and fairly.
-8. As a taskmaster You can only **remove tasks from anywhere within a queue** or add tasks **at the back of the queue**. If a task was removed and the same task is added again later by the taskmaster, the assignee will have to **confirm that action** (to prevent priority cheating, see 11.). 
+8. As a taskmaster you can only **remove tasks from anywhere within a queue** or add tasks **at the back of the queue**. If a task was removed and the same task is added again later by the taskmaster, the assignee will have to **confirm that action** (to prevent priority cheating, see 11.). 
 9. When an assignee adds a task to their own queue, the taskmaster must confirm this.
 10. Taskmasters will be **notified of changes to queues** that were made by their assignee. Assignees will be notified of changes to their queue that weren't made by themselves.
 11. **No priorities**. The only form of priority implicitly stems from the order tasks are in a queue.
