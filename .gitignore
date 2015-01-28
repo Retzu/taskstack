@@ -55,3 +55,6 @@ target/
 
 # db directory for docker postgresql
 db/
+
+# ignore the virtualenv
+venv/
