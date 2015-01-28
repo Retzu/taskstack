@@ -54,10 +54,16 @@ docs/_build/
 target/
 
 # db directory for docker postgresql
-db/
+taskstack-database/data
 
 # ignore the virtualenv
 venv/
 
 # ignore sqlite databases
 *.sqlite*
+
+# PyCharm files
+.idea/
+
+# Django migration files
+migrations/

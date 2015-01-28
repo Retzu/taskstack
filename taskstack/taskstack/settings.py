@@ -10,6 +10,7 @@ https://docs.djangoproject.com/en/1.7/ref/settings/
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
+
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 
@@ -57,11 +58,27 @@ WSGI_APPLICATION = 'taskstack.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.7/ref/settings/#databases
 
+DOCKER_DB_HOST = 'taskstack-database'
+
+# Set the database to either localhost (DB is running in a docker container)
+# or a hostname (Django AND DB are running in docker containers like in prod)
+# If Django is running in a container we can get the credentials from env. variables
+database = {
+    'ENGINE': 'django.db.backends.postgresql_psycopg2',
+    'NAME': 'taskstack',
+    'USER': 'taskstack',
+    'PASSWORD': 'taskstack',
+    'HOST': '127.0.0.1',
+    'PORT': '5432',
+}
+
+if not DEBUG:
+    database['HOST'] = DOCKER_DB_HOST
+    database['USER'] = os.environ['POSTGRES_USER']
+    database['PASSWORD'] = os.environ['POSTGRES_PASSWORD']
+
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
+    'default': database
 }
 
 # Internationalization
