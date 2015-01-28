@@ -53,6 +53,7 @@ Technical side of things
 Python
 ------
 Python 3 is the way to go here. It's also recommended to use virtualenv to install the things listed in requirements.txt using pip. Here's the basic procedure:
+
 1. It doesn't matter to Python or Django where exactly you put the virtualenv but I suggest to just create it in the directory you cloned the repo to since the directory `venv/` is already in `.gitignore`.
 2. `virtualenv venv`
 3. `source venv/bin/activate`
