@@ -58,3 +58,6 @@ db/
 
 # ignore the virtualenv
 venv/
+
+# ignore sqlite databases
+*.sqlite*
