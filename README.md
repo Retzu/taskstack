@@ -65,4 +65,4 @@ We'll use a Docker container for running PostgreSQL so people don't have to inst
 
 Django
 ------
-While developing, you should run Django with `manage.py runserver`. We'll make it so that the DB that is used while `DEBUG == True` is the Docker container, i. e. `localhost`. For production we'll use a Docker container for Django too. The DB's address being used then should be something like `taskstack-database` or something. Gunicorn and nginx will also be involved but we'll figure out the magic later.
+While developing, you should run Django with `manage.py runserver`. We'll make it so that the DB that is used while `DEBUG == True` is the Docker container, i. e. `localhost`. For production we'll use a Docker container for Django too. The DB's address being used should then be something like `taskstack-database` or something. Gunicorn and nginx will also be involved but we'll figure out the magic later.
