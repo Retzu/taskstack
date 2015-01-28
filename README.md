@@ -61,7 +61,7 @@ Python 3 is the way to go here. It's also recommended to use virtualenv to insta
 
 Docker
 ------
-We'll use a Docker container for running PostgreSQL so people don't have to install PostgreSQL to their machines.
+We'll use a Docker container for running PostgreSQL so people don't have to install PostgreSQL to their machines. There's a script that automates the start of the container somewhat but it's probably pretty crappy.
 
 Django
 ------
