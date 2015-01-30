@@ -4,7 +4,7 @@ from taskstack import settings
 
 
 class Member(models.Model):
-    """ A member as described in README.md """
+    """A member as described in README.md"""
     user = models.OneToOneField(User)
     current_task = models.OneToOneField('Task', null=True, blank=True)
 
@@ -13,12 +13,13 @@ class Member(models.Model):
 
 
 class Queue(models.Model):
-    """ A Queue as described in README.md """
+    """A Queue as described in README.md"""
     user = models.OneToOneField(User)
     limit = models.IntegerField(default=settings.DEFAULT_QUEUE_SIZE)
     objects = QueueManager()
 
     def is_full(self):
+        """Return whether the queue has reached its maximum number of tasks."""
         return self.task_set.count() >= self.limit
 
     def __str__(self):
