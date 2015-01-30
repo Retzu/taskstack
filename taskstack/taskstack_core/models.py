@@ -3,9 +3,15 @@ from django.db import models
 from taskstack import settings
 
 
+class Group(models.Model):
+    """A group as descriped in README.md."""
+    name = models.TextField()
+
+
 class Member(models.Model):
-    """A member as described in README.md"""
+    """A member as described in README.md."""
     user = models.OneToOneField(User)
+    group = models.ForeignKey(Group)
     current_task = models.OneToOneField('Task', null=True, blank=True)
 
     def __str__(self):
@@ -13,7 +19,7 @@ class Member(models.Model):
 
 
 class Queue(models.Model):
-    """A Queue as described in README.md"""
+    """A Queue as described in README.md."""
     user = models.OneToOneField(User)
     limit = models.IntegerField(default=settings.DEFAULT_QUEUE_SIZE)
     objects = QueueManager()
