@@ -3,6 +3,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db import IntegrityError
 from django.test import TestCase
 from taskstack_core import manager
+from taskstack_core.models import Queue
 
 
 class MemberTestCase(TestCase):
@@ -10,6 +11,7 @@ class MemberTestCase(TestCase):
         manager.create_member(username='John', email='john@example.com', password="john1234")
         user = User.objects.get(username='John')
         self.assertEqual(user.email, 'john@example.com')
+        self.assertIsInstance(user.member.queue, Queue)
 
     def test_user_does_not_exist(self):
         self.assertRaises(ObjectDoesNotExist, lambda: User.objects.get(username='Cartman'))
@@ -26,6 +28,4 @@ class MemberTestCase(TestCase):
 
 class QueueTestCase(TestCase):
     def setUp(self):
-        pass
-        #queue = Queue()
-        #queue.user =
+        member = manager.create_member(username='John', email='john@example.com', password='john1234')

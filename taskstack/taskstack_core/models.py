@@ -18,18 +18,13 @@ class Member(models.Model):
     group = models.ForeignKey(Group, null=True, blank=True)
     current_task = models.OneToOneField('Task', null=True, blank=True)
 
-    def __init__(self, user=None, group=None, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.user = user
-        self.group = group
-
     def __str__(self):
         return self.user.username
 
 
 class Queue(models.Model):
     """A Queue as described in README.md."""
-    user = models.OneToOneField(User)
+    member = models.OneToOneField(Member)
     limit = models.IntegerField(default=settings.DEFAULT_QUEUE_SIZE)
 
     def add_task(self, task):
@@ -62,7 +57,7 @@ class Task(models.Model):
     title = models.TextField()
     text = models.TextField()
     created = models.DateTimeField(auto_now=True)
-    added_to_queue = models.DateTimeField()
+    added_to_queue = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
         return self.title
