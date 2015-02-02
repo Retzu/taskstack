@@ -12,6 +12,8 @@ def create_member(username, email, password, group=None):
         member = Member(user=user, group=group)
         member.save()
 
-        queue = Queue()
-        member.queue = queue
+        queue = Queue(member=member)
         queue.save()
+
+        member.save()
+    return member

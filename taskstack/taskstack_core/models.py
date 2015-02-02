@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from django.db import models
+from django.utils.datetime_safe import datetime
 from taskstack import settings
 from .exceptions import QueueFullException
 
@@ -14,7 +15,7 @@ class Member(models.Model):
     A member as described in README.md.
     Members can be without a group.
     """
-    user = models.OneToOneField(User)
+    user = models.OneToOneField(User, unique=True)
     group = models.ForeignKey(Group, null=True, blank=True)
     current_task = models.OneToOneField('Task', null=True, blank=True)
 
@@ -37,13 +38,14 @@ class Queue(models.Model):
             raise QueueFullException("You cannot add more than {} tasks to this queue".format(self.limit))
         else:
             self.task_set.add(task)
+            task.added_to_queue = datetime.now()
 
     def is_full(self):
         """Return whether the queue has reached its maximum number of tasks."""
         return self.task_set.count() >= self.limit
 
     def __str__(self):
-        return "{}'s queue".format(self.user.username)
+        return "{}'s queue".format(self.member.user.username)
 
 
 class Task(models.Model):
@@ -60,4 +62,4 @@ class Task(models.Model):
     added_to_queue = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
-        return self.title
+        return "{}: {}...".format(self.title, self.text[20:])
