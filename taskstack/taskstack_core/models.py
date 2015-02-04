@@ -16,11 +16,15 @@ class Member(models.Model):
     Members can be without a group.
     """
     user = models.OneToOneField(User, unique=True)
+    name = models.TextField(null=True, blank=True)
     group = models.ForeignKey(Group, null=True, blank=True)
     current_task = models.OneToOneField('Task', null=True, blank=True)
 
     def __str__(self):
-        return self.user.username
+        if self.name is not None:
+            return self.name
+        else:
+            return self.user.email
 
 
 class Queue(models.Model):
