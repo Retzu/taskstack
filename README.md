@@ -1,3 +1,5 @@
+[![Code Health](https://landscape.io/github/Retzudo/taskstack/master/landscape.svg?style=flat)](https://landscape.io/github/Retzudo/taskstack/master)
+
 Taskstack
 =========
 The idea of Taskstack was born from my personal expierences. A group leader assigned task after task to a small team of 3 people and the number of tasks grew out of hand. The tasks were shifted around and priorities changed almost on an hourly basis. The group also used a plethora of tools. When it came to task management, we had an issue tracking system, mails, verbal conversations and two instant messaging systems. The end result was poorly done tasks and tasks that were simply never finished. My first idea was centralize all tasks and to buy those old fashioned "paper skewers" you would put small notes on. The group leader would then physically see the list of tasks of a person and maybe hesitate before putting another note on the pile. This in turn would keep the stack of notes manageable, in one place and the assignee in a happy mood. The problem with this approach is the note at the very bottom you'll probably never reach. That's why we need a queue. 
