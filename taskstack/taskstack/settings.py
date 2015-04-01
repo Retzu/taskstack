@@ -22,7 +22,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 SECRET_KEY = ''.join([random.SystemRandom().choice('abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)') for i in range(50)])
 
 # If the env variable TASKSTAK_DEBUG has any value, set DEBUG to True
-if os.getenv('TASKSTAK_DEBUG', False):
+if os.getenv('TASKSTACK_DEBUG', False):
     DEBUG = True
     TEMPLATE_DEBUG = True
 else:
