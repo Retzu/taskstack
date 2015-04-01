@@ -78,9 +78,9 @@ database = {
 }
 
 if not DEBUG:
-    database['HOST'] = DOCKER_DB_HOST
-    database['USER'] = os.environ['POSTGRES_USER']
-    database['PASSWORD'] = os.environ['POSTGRES_PASSWORD']
+    database['HOST'] = os.getenv('POSTGRES_DB', DOCKER_DB_HOST)
+    database['USER'] = os.getenv('POSTGRES_USER', database['USER'])
+    database['PASSWORD'] = os.getenv('POSTGRES_PASSWORD', database['PASSWORD'])
 
 DATABASES = {
     'default': database
