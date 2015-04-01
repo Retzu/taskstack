@@ -21,10 +21,14 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = ''.join([random.SystemRandom().choice('abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)') for i in range(50)])
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# If the env variable TASKSTAK_DEBUG has any value, set DEBUG to True
+if os.getenv('TASKSTAK_DEBUG', False):
+    DEBUG = True
+    TEMPLATE_DEBUG = True
+else:
+    DEBUG = False
+    TEMPLATE_DEBUG = False
 
-TEMPLATE_DEBUG = True
 
 ALLOWED_HOSTS = []
 
