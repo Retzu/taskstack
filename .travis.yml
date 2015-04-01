@@ -19,3 +19,4 @@ before_script:
 
 script:
     - python3 taskstack/manage.py test
+# Test!
