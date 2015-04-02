@@ -1,3 +1,4 @@
+"""Unit Tests"""
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import IntegrityError
@@ -8,6 +9,9 @@ from taskstack_core.models import Queue, Task, Member
 
 
 class MemberTestCase(TestCase):
+    """
+    Test user creation/deletion
+    """
     def test_manager_create_user(self):
         """Test if we can create a user using the manager."""
         member = manager.create_member(email='john@example.com', password="john1234", name="John Doe")
@@ -31,6 +35,9 @@ class MemberTestCase(TestCase):
 
 
 class QueueTestCase(TestCase):
+    """
+    Test messings with queues
+    """
     def setUp(self):
         member = manager.create_member(email='john@example.com', password='john1234', name="John Doe")
         for i in range(10):
