@@ -18,3 +18,4 @@ def create_member(email, password, name=None, group=None):
 
         member.save()
     return member
+

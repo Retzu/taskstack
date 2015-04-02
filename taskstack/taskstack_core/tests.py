@@ -8,7 +8,7 @@ from taskstack_core.models import Queue, Task, Member
 
 
 class MemberTestCase(TestCase):
-    def test_member_manager_user_creation(self):
+    def test_manager_create_user(self):
         """Test if we can create a user using the manager."""
         member = manager.create_member(email='john@example.com', password="john1234", name="John Doe")
         found_member = Member.objects.get(user__email='john@example.com')
@@ -19,14 +19,14 @@ class MemberTestCase(TestCase):
         """Test if we can find a non-existent user."""
         self.assertRaises(ObjectDoesNotExist, lambda: Member.objects.get(user__username='Cartman'))
 
-    def test_cannot_create_duplicate_user(self):
+    def test_duplicate_user(self):
         """Test if we can create the same user twice using the manager."""
         try:
             manager.create_member(email='john@example.com', password="john1234", name="John Doe")
             manager.create_member(email='john@example.com', password="john1234", name="John Doe")
         except IntegrityError:
             pass
-        
+
         self.assertEqual(User.objects.count(), 1)
 
 
@@ -34,7 +34,7 @@ class QueueTestCase(TestCase):
     def setUp(self):
         member = manager.create_member(email='john@example.com', password='john1234', name="John Doe")
         for i in range(10):
-            member.queue.add_task(Task(title='Task #{}'.format(i), text='Task #1'.format(i)))
+            member.queue.add_task(Task(title='Task #{}'.format(i), text='Task #{}'.format(i)))
 
     def test_queue_limit(self):
         """Test if we can go over a queue's task limit."""
@@ -47,3 +47,4 @@ class QueueTestCase(TestCase):
             pass
 
         self.assertEqual(member.queue.task_set.count(), 10)
+
