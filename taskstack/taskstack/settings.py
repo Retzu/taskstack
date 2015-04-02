@@ -63,11 +63,8 @@ WSGI_APPLICATION = 'taskstack.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.7/ref/settings/#databases
 
-DOCKER_DB_HOST = 'taskstack-database'
-
-# Set the database to either localhost (DB is running in a docker container)
-# or a hostname (Django AND DB are running in docker containers like in prod)
-# If Django is running in a container we can get the credentials from env. variables
+# Default database is on localhost but that's overridable with
+# env variables.
 database = {
     'ENGINE': 'django.db.backends.postgresql_psycopg2',
     'NAME': 'taskstack',
@@ -77,10 +74,9 @@ database = {
     'PORT': '5432',
 }
 
-if not DEBUG:
-    database['HOST'] = os.getenv('POSTGRES_DB', DOCKER_DB_HOST)
-    database['USER'] = os.getenv('POSTGRES_USER', database['USER'])
-    database['PASSWORD'] = os.getenv('POSTGRES_PASSWORD', database['PASSWORD'])
+database['HOST'] = os.getenv('POSTGRES_DB', '127.0.0.1')
+database['USER'] = os.getenv('POSTGRES_USER', database['USER'])
+database['PASSWORD'] = os.getenv('POSTGRES_PASSWORD', database['PASSWORD'])
 
 DATABASES = {
     'default': database
