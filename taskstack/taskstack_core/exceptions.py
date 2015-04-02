@@ -1,2 +1,3 @@
 class QueueFullException(Exception):
     pass
+
