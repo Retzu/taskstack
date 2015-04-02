@@ -1,0 +1,8 @@
+doc-warnings: yes
+test-warnings: yes
+strictness: veryhigh
+max-line-length: 1000 # It's probably just me but I don't give a flying crap about how long lines are
+ignore-paths:
+    - taskstack-database
+ignore-patterns:
+    - wsgi.py
