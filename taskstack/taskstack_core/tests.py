@@ -9,9 +9,9 @@ from taskstack_core.models import Queue, Task, Member
 
 
 class MemberTestCase(TestCase):
-    """
-    Test user creation/deletion
-    """
+
+    """Test user creation/deletion"""
+
     def test_manager_create_user(self):
         """Test if we can create a user using the manager."""
         member = manager.create_member(email='john@example.com', password="john1234", name="John Doe")
@@ -35,16 +35,18 @@ class MemberTestCase(TestCase):
 
 
 class QueueTestCase(TestCase):
-    """
-    Test messings with queues
-    """
+
+    """Test messings with queues"""
+
     def setUp(self):
         member = manager.create_member(email='john@example.com', password='john1234', name="John Doe")
         for i in range(10):
             member.queue.add_task(Task(title='Task #{}'.format(i), text='Task #{}'.format(i)))
 
     def test_queue_limit(self):
+
         """Test if we can go over a queue's task limit."""
+
         member = Member.objects.get(user__username='john@example.com')
         self.assertEqual(member.queue.task_set.count(), 10)
 
