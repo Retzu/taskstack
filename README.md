@@ -1,4 +1,4 @@
-[![Code Health](https://landscape.io/github/Retzudo/taskstack/master/landscape.svg?style=flat)](https://landscape.io/github/Retzudo/taskstack/master)
+[![Code Health](https://landscape.io/github/Retzudo/taskstack/master/landscape.svg?style=flat)](https://landscape.io/github/Retzudo/taskstack/master) [![Build Status](https://travis-ci.org/Retzudo/taskstack.svg?branch=master)](https://travis-ci.org/Retzudo/taskstack)
 
 Taskstack
 =========
