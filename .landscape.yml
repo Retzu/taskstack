@@ -11,4 +11,5 @@ ignore-patterns:
     - urls.py
     - models.py
     - views.py
+    - admin.py
     - __init__.py
