@@ -44,9 +44,7 @@ class QueueTestCase(TestCase):
             member.queue.add_task(Task(title='Task #{}'.format(i), text='Task #{}'.format(i)))
 
     def test_queue_limit(self):
-
         """Test if we can go over a queue's task limit."""
-
         member = Member.objects.get(user__username='john@example.com')
         self.assertEqual(member.queue.task_set.count(), 10)
 
