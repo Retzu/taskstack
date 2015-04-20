@@ -1,8 +1,9 @@
 FROM debian:jessie
 MAINTAINER James Brink, brink.james@gmail.com
 
-RUN apt-get update && apt-get install -y postgresql-9.4 postgresql-contrib-9.4 postgresql-9.4-postgis-2.1 postgresql-client-9.4 inotify-tools
-    && rm -rf /var/lib/apt/lists/*
+RUN apt-get update
+RUN apt-get install -y postgresql-9.4 postgresql-contrib-9.4 postgresql-9.4-postgis-2.1 postgresql-client-9.4 inotify-tools
+RUN rm -rf /var/lib/apt/lists/*
 
 ADD ./scripts/postgres.sh /postgres.sh
 RUN chown postgres:postgres /postgres.sh

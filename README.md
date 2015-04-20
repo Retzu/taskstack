@@ -72,3 +72,7 @@ While developing, you should run Django with `manage.py runserver`. We'll make i
 Ubuntu
 ------
 On Ubuntu you need to install `libpq-dev` to be able to install `psycopg2` with pip.
+
+Arch Linux
+----------
+On Arch you need to install `postgresql-libs`
