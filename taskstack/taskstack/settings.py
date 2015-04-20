@@ -10,6 +10,7 @@ https://docs.djangoproject.com/en/1.7/ref/settings/
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
+import random
 
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
@@ -18,12 +19,16 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 # See https://docs.djangoproject.com/en/1.7/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'IM_A_DUMMY_KEY_CHANGE_ME'
+SECRET_KEY = ''.join([random.SystemRandom().choice('abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)') for i in range(50)])
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# If the env variable TASKSTAK_DEBUG has any value, set DEBUG to True
+if os.getenv('TASKSTACK_DEBUG', False):
+    DEBUG = True
+    TEMPLATE_DEBUG = True
+else:
+    DEBUG = False
+    TEMPLATE_DEBUG = False
 
-TEMPLATE_DEBUG = True
 
 ALLOWED_HOSTS = []
 
@@ -58,11 +63,8 @@ WSGI_APPLICATION = 'taskstack.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.7/ref/settings/#databases
 
-DOCKER_DB_HOST = 'taskstack-database'
-
-# Set the database to either localhost (DB is running in a docker container)
-# or a hostname (Django AND DB are running in docker containers like in prod)
-# If Django is running in a container we can get the credentials from env. variables
+# Default database is on localhost but that's overridable with
+# env variables.
 database = {
     'ENGINE': 'django.db.backends.postgresql_psycopg2',
     'NAME': 'taskstack',
@@ -72,10 +74,9 @@ database = {
     'PORT': '5432',
 }
 
-if not DEBUG:
-    database['HOST'] = DOCKER_DB_HOST
-    database['USER'] = os.environ['POSTGRES_USER']
-    database['PASSWORD'] = os.environ['POSTGRES_PASSWORD']
+database['HOST'] = os.getenv('POSTGRES_DB', '127.0.0.1')
+database['USER'] = os.getenv('POSTGRES_USER', database['USER'])
+database['PASSWORD'] = os.getenv('POSTGRES_PASSWORD', database['PASSWORD'])
 
 DATABASES = {
     'default': database

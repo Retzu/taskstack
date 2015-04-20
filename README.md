@@ -1,3 +1,6 @@
+[![Code Health](https://landscape.io/github/Retzudo/taskstack/master/landscape.svg?style=flat)](https://landscape.io/github/Retzudo/taskstack/master)
+[![Build Status](https://travis-ci.org/Retzudo/taskstack.svg?branch=master)](https://travis-ci.org/Retzudo/taskstack)
+
 Taskstack
 =========
 The idea of Taskstack was born from my personal expierences. A group leader assigned task after task to a small team of 3 people and the number of tasks grew out of hand. The tasks were shifted around and priorities changed almost on an hourly basis. The group also used a plethora of tools. When it came to task management, we had an issue tracking system, mails, verbal conversations and two instant messaging systems. The end result was poorly done tasks and tasks that were simply never finished. My first idea was centralize all tasks and to buy those old fashioned "paper skewers" you would put small notes on. The group leader would then physically see the list of tasks of a person and maybe hesitate before putting another note on the pile. This in turn would keep the stack of notes manageable, in one place and the assignee in a happy mood. The problem with this approach is the note at the very bottom you'll probably never reach. That's why we need a queue. 
@@ -63,11 +66,11 @@ $ pip install -r requirements.txt
 
 Docker
 ------
-We'll use a Docker container for running PostgreSQL so people don't have to install PostgreSQL to their machines. There's a script that automates the start of the container somewhat but it's probably pretty crappy.
+There's a script for starting a PostgreSQL Docker container that works for default values in `settings.py`.
 
 Django
 ------
-While developing, you should run Django with `manage.py runserver`. We'll make it so that the DB that is used while `DEBUG == True` is the Docker container, i. e. `localhost`. For production we'll use a Docker container for Django too. The DB's address being used should then be something like `taskstack-database` or something. Gunicorn and nginx will also be involved but we'll figure out the magic later.
+While developing, you should run Django with `manage.py runserver`. DB host, DB name, username and password default to `localhost` and `taskstack` can be changed by running Django with env variables (see `settings.py`). Docker, Gunicorn and nginx will be involved in the future but we'll figure out the magic later.
 
 Ubuntu
 ------

@@ -67,3 +67,6 @@ venv/
 
 # Django migration files
 migrations/
+
+# Rope
+.ropeproject
