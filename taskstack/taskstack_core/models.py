@@ -37,7 +37,7 @@ class Queue(models.Model):
         Adds a task to the queue and respects its task limit.
         You must always use this method instead of task_set.add.
         If you read this and have a better idea that enables us to use add, go ahead.
-        ""
+        """
         if self.is_full():
             raise QueueFullException("You cannot add more than {} tasks to this queue".format(self.limit))
         else:
