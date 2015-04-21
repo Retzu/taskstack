@@ -45,7 +45,7 @@ class Queue(models.Model):
             task.added_to_queue = datetime.now()
 
     def is_full(self):
-        """Return whether the queue has reached its maximum number of tasks."""
+        """Returns whether the queue has reached its maximum number of tasks."""
         return self.task_set.count() >= self.limit
 
     def __str__(self):
