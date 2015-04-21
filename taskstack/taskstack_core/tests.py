@@ -25,11 +25,9 @@ class MemberTestCase(TestCase):
 
     def test_duplicate_user(self):
         """Test if we can create the same user twice using the manager."""
-        try:
+        with self.assertRaises(IntegrityError):
             manager.create_member(email='john@example.com', password="john1234", name="John Doe")
             manager.create_member(email='john@example.com', password="john1234", name="John Doe")
-        except IntegrityError:
-            pass
 
         self.assertEqual(User.objects.count(), 1)
 
@@ -48,10 +46,8 @@ class QueueTestCase(TestCase):
         member = Member.objects.get(user__username='john@example.com')
         self.assertEqual(member.queue.task_set.count(), 10)
 
-        try:
+        with self.assertRaises(QueueFullException):
             member.queue.add_task(Task(title='Task #11', text='This task should not be accepted'))
-        except QueueFullException:
-            pass
 
         self.assertEqual(member.queue.task_set.count(), 10)
 
