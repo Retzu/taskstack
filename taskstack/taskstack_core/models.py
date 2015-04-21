@@ -66,4 +66,4 @@ class Task(models.Model):
     added_to_queue = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
-        return "{}: {}...".format(self.title, self.text[20:])
+        return "{}: {}...".format(self.title, self.text[:20])

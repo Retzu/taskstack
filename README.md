@@ -1,4 +1,5 @@
-[![Code Health](https://landscape.io/github/Retzudo/taskstack/master/landscape.svg?style=flat)](https://landscape.io/github/Retzudo/taskstack/master) [![Build Status](https://travis-ci.org/Retzudo/taskstack.svg?branch=master)](https://travis-ci.org/Retzudo/taskstack)
+[![Code Health](https://landscape.io/github/Retzudo/taskstack/master/landscape.svg?style=flat)](https://landscape.io/github/Retzudo/taskstack/master)
+[![Build Status](https://travis-ci.org/Retzudo/taskstack.svg?branch=master)](https://travis-ci.org/Retzudo/taskstack)
 
 Taskstack
 =========
@@ -65,12 +66,16 @@ $ pip install -r requirements.txt
 
 Docker
 ------
-We'll use a Docker container for running PostgreSQL so people don't have to install PostgreSQL to their machines. There's a script that automates the start of the container somewhat but it's probably pretty crappy.
+There's a script for starting a PostgreSQL Docker container that works for default values in `settings.py`.
 
 Django
 ------
-While developing, you should run Django with `manage.py runserver`. We'll make it so that the DB that is used while `DEBUG == True` is the Docker container, i. e. `localhost`. For production we'll use a Docker container for Django too. The DB's address being used should then be something like `taskstack-database` or something. Gunicorn and nginx will also be involved but we'll figure out the magic later.
+While developing, you should run Django with `manage.py runserver`. DB host, DB name, username and password default to `localhost` and `taskstack` can be changed by running Django with env variables (see `settings.py`). Docker, Gunicorn and nginx will be involved in the future but we'll figure out the magic later.
 
 Ubuntu
 ------
 On Ubuntu you need to install `libpq-dev` to be able to install `psycopg2` with pip.
+
+Arch Linux
+----------
+On Arch you need to install `postgresql-libs`
