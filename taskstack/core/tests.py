@@ -37,7 +37,6 @@ class MemberTestCase(TestCase):
             where_are_you_john = Member.objects.get(user__email='john3@example.com')
 
 
-
 class GroupTestCase(TestCase):
 
     """Test groups."""
