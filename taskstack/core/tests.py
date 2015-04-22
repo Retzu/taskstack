@@ -1,17 +1,16 @@
 """Unit Tests"""
 from unittest import TestCase
-from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import IntegrityError
 from django.test import Client
 from core import manager
 from core.exceptions import QueueFullException
-from core.models import Queue, Task, Member
+from core.models import Queue, Task, Member, Group
 
 
 class MemberTestCase(TestCase):
 
-    """Test user creation/deletion"""
+    """Test user creation/deletion."""
 
     def test_manager_create_user(self):
         """Test if we can create a user using the manager."""
@@ -39,9 +38,31 @@ class MemberTestCase(TestCase):
             where_are_you_john = Member.objects.get(user__email='john3@example.com')
 
 
+
+class GroupTestCase(TestCase):
+
+    """Test groups."""
+
+    def test_groups(self):
+        """Test if a group can hold members."""
+        group = Group.objects.create(name="Test Group")
+
+        # Create 10 users
+        users = []
+        for i in range(10):
+            users.append(
+                manager.create_member(email='user{}@example.com'.format(i),
+                                      password='password',
+                                      name='User #{}'.format(i),
+                                      group=group)
+            )
+
+        self.assertEqual(group.members.count(), 10)
+
+
 class QueueTestCase(TestCase):
 
-    """Test messings with queues"""
+    """Test messings with queues."""
 
     def test_queue_limit(self):
         """Test if we can go over a queue's task limit."""
@@ -51,18 +72,18 @@ class QueueTestCase(TestCase):
             member.queue.add_task(Task(title='Task #{}'.format(i), text='Task #{}'.format(i)))
 
         member = Member.objects.get(user__username='john4@example.com')
-        self.assertEqual(member.queue.task_set.count(), member.queue.limit)
+        self.assertEqual(member.queue.tasks.count(), member.queue.limit)
 
         # Add a another task and expect an exception
         with self.assertRaises(QueueFullException):
             member.queue.add_task(Task(title='Task #11', text='This task should not be accepted'))
 
-        self.assertEqual(member.queue.task_set.count(), member.queue.limit)
+        self.assertEqual(member.queue.tasks.count(), member.queue.limit)
 
 
 class PermissionTestCase(TestCase):
 
-    """Test permissions"""
+    """Test permissions."""
 
     def test_queue_permissions(self):
         john = manager.create_member(email='john5@example.com', password='john1234', name='John Doe')
@@ -77,6 +98,24 @@ class PermissionTestCase(TestCase):
         self.assertFalse(jane.has_perm('add_to_queue', john.queue))
         self.assertFalse(john.has_perm('remove_from_queue', jane.queue))
         self.assertFalse(jane.has_perm('remove_from_queue', john.queue))
+
+    def test_taskmaster(self):
+        group = Group.objects.create(name="My Group #1")
+        taskmaster = manager.create_member(email='taskmaster@example.com', password='taskmaster', name='Taskmaster')
+
+        john = manager.create_member(email='john6@example.com', password='john1234', name='John Doe', group=group)
+        jane = manager.create_member(email='jane6@example.com', password='jane1234', name='Jane Doe', group=group)
+
+        group.add_taskmaster(taskmaster)
+
+        self.assertTrue(taskmaster.has_perm('add_to_queue', john.queue))
+        self.assertTrue(taskmaster.has_perm('add_to_queue', jane.queue))
+
+        group.remove_taskmaster(taskmaster)
+
+        self.assertFalse(taskmaster.has_perm('add_to_queue', john.queue))
+        self.assertFalse(taskmaster.has_perm('add_to_queue', jane.queue))
+
 
 class WebInterfaceTestCase(TestCase):
 

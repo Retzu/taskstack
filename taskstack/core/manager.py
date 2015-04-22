@@ -18,8 +18,7 @@ def create_member(email, password, name=None, group=None):
         queue = Queue(member=member)
         queue.save()
 
-        assign_perm('add_to_queue', member.user, queue)
-        assign_perm('remove_from_queue', member.user, queue)
+        queue.grant_modify_permissions(member)
 
         member.save()
     return member
