@@ -22,5 +22,5 @@ script:
     - coverage run --source=taskstack taskstack/manage.py test taskstack
 
 after_success:
-    - coverage report -m core/*.py
+    - coverage report -m taskstack/core/*.py
     - coveralls
