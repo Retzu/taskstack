@@ -3,7 +3,9 @@ from django import forms
 
 
 class RegisterForm(forms.Form):
+
     """Form for registering new users."""
+    
     email = forms.EmailField()
     name = forms.CharField(label='Name', max_length=255)
     password = forms.CharField(label='Password', widget=forms.PasswordInput)
