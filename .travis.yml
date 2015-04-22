@@ -19,7 +19,7 @@ before_script:
     - python3 taskstack/manage.py migrate
 
 script:
-    - coverage run --source=taskstack --omit="settings.py,wsgi.py" taskstack/manage.py test taskstack
+    - coverage run --source=taskstack --omit="taskstack/taskstack/settings.py,taskstack/taskstack/wsgi.py" taskstack/manage.py test taskstack
 
 after_success:
     - coverage report -m taskstack/core/*.py
