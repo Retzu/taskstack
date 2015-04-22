@@ -44,6 +44,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'guardian',
     'rest_framework',
+    'django_coverage',
     'core',
 )
 

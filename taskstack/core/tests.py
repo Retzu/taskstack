@@ -18,6 +18,12 @@ class MemberTestCase(TestCase):
         found_member = Member.objects.get(user__email='john1@example.com')
         self.assertEqual(member, found_member)
         self.assertIsInstance(member.queue, Queue)
+        # test __str__
+        self.assertGreater(len(member.__str__()), 0)
+        self.assertGreater(len(member.queue.__str__()), 0)
+        # test __str__ for member without name
+        member = Member.create(email='john_@example.com', password='john1234')
+        self.assertGreater(len(member.__str__()), 0)
 
     def test_user_does_not_exist(self):
         """Test if we can find a non-existent user."""
@@ -69,7 +75,10 @@ class QueueTestCase(TestCase):
         # First fill the queue with as many tasks it can hold
         member = Member.create(email='john4@example.com', password='john1234', name='John Doe')
         for i in range(member.queue.limit):
-            member.queue.add_task(Task(title='Task #{}'.format(i), text='Task #{}'.format(i)))
+            task = Task(title='Task #{}'.format(i), text='Task #{}'.format(i))
+            member.queue.add_task(task)
+            self.assertGreater(len(task.__str__()), 0)
+
 
         member = Member.objects.get(user__username='john4@example.com')
         self.assertEqual(member.queue.tasks.count(), member.queue.limit)
@@ -233,3 +242,33 @@ class WebInterfaceTestCase(SimpleTestCase):
 
         response = client.get('/login')
         self.assertRedirects(response, '/')
+
+    def test_login(self):
+        """Test if /login works."""
+        client = Client()
+        response = client.post('/register', data={
+            'email': 'test.login@example.com',
+            'name': 'Testy McGee',
+            'password': 'password',
+            'password_repeat': 'password'
+        }, follow=True)
+        client.logout()
+
+        response = client.post('/login', data={
+            'username': 'test.login@example.com',
+            'password': 'password'
+        }, follow=True)
+
+        self.assertRedirects(response, '/')
+
+    def test_logout(self):
+        """Test logout resource."""
+        client = Client()
+        response = client.get('/logout')
+        self.assertRedirects(response, '/login')
+
+    def test_register_form(self):
+        """Test register form rendering."""
+        client = Client()
+        response = client.get('/register')
+        self.assertEqual(response.status_code, 200)
