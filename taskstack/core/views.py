@@ -56,8 +56,6 @@ def register(request):
                 authenticate(form.cleaned_data['email'], form.cleaned_data['password'])
                 login(request, member.user)
                 return redirect(reverse('index'))
-            else:
-                raise
 
     else:
         form = RegisterForm()
