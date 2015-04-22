@@ -86,6 +86,7 @@ class PermissionTestCase(TestCase):
     """Test permissions."""
 
     def test_queue_permissions(self):
+        """Test if members have the right permissions to queues."""
         john = Member.create(email='john5@example.com', password='john1234', name='John Doe')
         jane = Member.create(email='jane5@example.com', password='jane1234', name='Jane Doe')
 
@@ -100,6 +101,7 @@ class PermissionTestCase(TestCase):
         self.assertFalse(jane.has_perm('remove_from_queue', john.queue))
 
     def test_taskmaster(self):
+        """Test if taskmasters have the right permissions to queues."""
         group = Group.objects.create(name="My Group #1")
         taskmaster = Member.create(email='taskmaster@example.com', password='taskmaster', name='Taskmaster')
 
@@ -176,7 +178,9 @@ class WebInterfaceTestCase(SimpleTestCase):
         self.assertFormError(response, 'form', None, 'Passwords don\'t match!')
 
     def test_user_exists(self):
-        """Test what happens when somebody tries to register a new user
+        """Register existing address.
+
+        Test what happens when somebody tries to register a new user
         when the used email address is already in use.
         """
         client = Client()
