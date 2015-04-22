@@ -60,6 +60,8 @@ class Member(models.Model):
 
         member.save()
 
+        return member
+
     def __str__(self):
         if self.name is not None:
             return self.name
