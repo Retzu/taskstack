@@ -1,6 +1,6 @@
 """This module contains helper methods for doing things in taskstack"""
 from django.contrib.auth.models import User
-from taskstack_core.models import Member, Queue
+from core.models import Member, Queue
 from django.db import transaction
 
 

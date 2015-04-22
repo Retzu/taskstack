@@ -3,9 +3,9 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import IntegrityError
 from unittest import TestCase
-from taskstack_core import manager
-from taskstack_core.exceptions import QueueFullException
-from taskstack_core.models import Queue, Task, Member
+from core import manager
+from core.exceptions import QueueFullException
+from core.models import Queue, Task, Member
 
 
 class MemberTestCase(TestCase):
