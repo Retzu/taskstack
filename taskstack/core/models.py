@@ -1,4 +1,3 @@
-from django.contrib.auth.models import User
 from django.db import models
 from django.utils.datetime_safe import datetime
 from taskstack import settings
@@ -15,7 +14,7 @@ class Member(models.Model):
     A member as described in README.md.
     Members can be without a group.
     """
-    user = models.OneToOneField(User, unique=True)
+    user = models.OneToOneField('auth.User', unique=True)
     name = models.TextField(null=True, blank=True)
     group = models.ForeignKey(Group, null=True, blank=True)
     current_task = models.OneToOneField('Task', null=True, blank=True)
