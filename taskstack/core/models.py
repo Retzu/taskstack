@@ -3,7 +3,7 @@ from django.db import models
 from django.utils.datetime_safe import datetime
 from guardian.shortcuts import assign_perm, remove_perm
 from taskstack import settings
-from .exceptions import QueueFullException
+from core.exceptions import QueueFullException
 
 
 class Group(models.Model):
