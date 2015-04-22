@@ -7,6 +7,7 @@ install:
     - sudo apt-get update -qq
     - sudo apt-get install -y libpq-dev
     - pip install -r requirements.txt
+    - pip install coverage coveralls
 
 env:
     - POSTGRES_DB="127.0.0.1" POSTGRES_USER="postgres" POSTGRES_PASSWORD="postgres"
@@ -18,5 +19,7 @@ before_script:
     - python3 taskstack/manage.py migrate
 
 script:
-    - python3 taskstack/manage.py test taskstack
-# Test!
+    - coverage run --source=taskstack taskstack/manage.py test taskstack
+
+after_success:
+    - coveralls
