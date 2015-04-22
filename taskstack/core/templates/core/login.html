@@ -1,0 +1,14 @@
+{% extends 'core/master.html' %}
+
+{% block title %}{{ block.super }} - Login{% endblock %}
+
+{% block content %}
+    <h1>Taskstack</h1>
+    <form action="{% url 'login' %}" method="post">
+        {{ form }}
+        {% csrf_token %}
+        <button>Login</button>
+        {{ form.non_field_errors }}
+    </form>
+    <a href="{% url 'register' %}">Create an account</a>
+{% endblock %}
