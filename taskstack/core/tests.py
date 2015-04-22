@@ -1,8 +1,9 @@
 """Unit Tests"""
 from unittest import TestCase
+from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import IntegrityError
-from django.test import Client
+from django.test import Client, SimpleTestCase
 from core.exceptions import QueueFullException
 from core.models import Queue, Task, Member, Group
 
@@ -115,12 +116,116 @@ class PermissionTestCase(TestCase):
         self.assertFalse(taskmaster.has_perm('add_to_queue', jane.queue))
 
 
-class WebInterfaceTestCase(TestCase):
+class WebInterfaceTestCase(SimpleTestCase):
 
     """Test the web frontend."""
 
     def test_index(self):
-        """Test if the index returns *something*."""
+        """
+        Test if the index returns a redirect to login when not logged in.
+        """
         client = Client()
-        response = client.get('/')
+        response = client.get('/', follow=True)
+        self.assertRedirects(response, '/login?next=/')
+
+    def test_registration(self):
+        """Test if registrations are working."""
+        client = Client()
+        response = client.post('/register', data={
+            'email': 'test1@example.com',
+            'name': 'Testy McGee',
+            'password': 'password',
+            'password_repeat': 'password'
+        }, follow=True)
+        self.assertRedirects(response, '/')
+
+        self.assertIsInstance(Member.objects.get(user__email='test1@example.com'), Member)
+        self.assertIsInstance(Member.objects.get(user__email='test1@example.com').user, User)
+
+    def test_empty_form(self):
+        """Test what happens when form is completely empty."""
+        client = Client()
+        response = client.post('/register', data={
+            'email': '',
+            'name': '',
+            'password': '',
+            'password_repeat': ''
+        }, follow=True)
+        for field in ['email', 'name', 'password', 'password_repeat']:
+            self.assertFormError(response, 'form', field, 'This field is required.')
+
+    def test_invalid_email(self):
+        """Test what happens when email field in invalid."""
+        client = Client()
+        response = client.post('/register', data={
+            'email': 'not an email address',
+            'name': 'Testy McGee',
+            'password': 'password',
+            'password_repeat': 'password'
+        }, follow=True)
+        self.assertFormError(response, 'form', 'email', 'Enter a valid email address.')
+
+    def test_password_dont_match(self):
+        """Test password that don't match."""
+        client = Client()
+        response = client.post('/register', data={
+            'email': 'not an email address',
+            'name': 'Testy McGee',
+            'password': 'password',
+            'password_repeat': 'not matching'
+        }, follow=True)
+        self.assertFormError(response, 'form', None, 'Passwords don\'t match!')
+
+    def test_user_exists(self):
+        """
+        Test what happens when somebody tries to register a new user
+        when the used email address is already in use.
+        """
+        client = Client()
+        response = client.post('/register', data={
+            'email': 'existing@example.com',
+            'name': 'Testy McGee',
+            'password': 'password',
+            'password_repeat': 'password'
+        }, follow=True)
         self.assertEqual(response.status_code, 200)
+        self.assertIsInstance(Member.objects.get(user__email='existing@example.com'), Member)
+
+        client.logout()
+
+        response = client.post('/register', data={
+            'email': 'existing@example.com',
+            'name': 'Totally not Testy McGee',
+            'password': 'password',
+            'password_repeat': 'password'
+        })
+        self.assertEqual(response.status_code, 200)
+        self.assertFormError(response, 'form', 'email', 'User already exists!')
+
+    def test_register_redirect(self):
+        client = Client()
+        response = client.post('/register', data={
+            'email': 'new.user@example.com',
+            'name': 'Testy McGee',
+            'password': 'password',
+            'password_repeat': 'password'
+        }, follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertIsInstance(Member.objects.get(user__email='new.user@example.com'), Member)
+
+        response = client.get('/register')
+        self.assertRedirects(response, '/')
+
+    def test_already_logged_in(self):
+        client = Client()
+        response = client.post('/register', data={
+            'email': 'new.user2@example.com',
+            'name': 'Testy McGee',
+            'password': 'password',
+            'password_repeat': 'password'
+        }, follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertIsInstance(Member.objects.get(user__email='new.user2@example.com'), Member)
+
+        response = client.get('/login')
+        self.assertRedirects(response, '/')

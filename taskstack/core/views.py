@@ -15,8 +15,12 @@ def index(request):
 
 def login_view(request):
     """
-    Show the login form and handle them.
+    Show the login form and handle them. Redirect to the main interface
+    if a user is already logged in.
     """
+    if request.user.is_authenticated():
+        return redirect(reverse('index'))
+
     if request.method == 'POST':
         form = AuthenticationForm(data=request.POST)
 
@@ -49,13 +53,15 @@ def register(request):
     if request.method == 'POST':
         form = RegisterForm(request.POST)
         if form.is_valid():
-            if not Member.objects.get(email=form.cleaned_data['email']):
-                member = Member.create(email=form.cleaned_data['email'],
-                                       password=form.cleaned_data['password'],
-                                       name=form.cleaned_data['name'])
-                authenticate(form.cleaned_data['email'], form.cleaned_data['password'])
-                login(request, member.user)
-                return redirect(reverse('index'))
+            member = Member.create(email=form.cleaned_data['email'],
+                          password=form.cleaned_data['password'],
+                          name=form.cleaned_data['name'])
+            member.save()
+
+            user = authenticate(username=form.cleaned_data['email'],
+                                password=form.cleaned_data['password'])
+            login(request, user)
+            return redirect(reverse('index'))
 
     else:
         form = RegisterForm()

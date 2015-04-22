@@ -18,5 +18,11 @@ class RegisterForm(forms.Form):
         return self.cleaned_data
 
     def clean_email(self):
-        if Member.objects.get(user__email=self.cleaned_data['email']):
-            raise forms.ValidationError('User already exists!')
+        email = self.cleaned_data['email']
+        try:
+            if Member.objects.get(user__email=email):
+                raise forms.ValidationError('User already exists!')
+        except Member.DoesNotExist:
+            pass
+
+        return email
