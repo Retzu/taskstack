@@ -2,6 +2,7 @@
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import IntegrityError
+from django.test import Client
 from unittest import TestCase
 from core import manager
 from core.exceptions import QueueFullException
@@ -53,3 +54,13 @@ class QueueTestCase(TestCase):
 
         self.assertEqual(member.queue.task_set.count(), member.queue.limit)
 
+
+class WebInterfaceTestCase(TestCase):
+
+    """Test the web frontend."""
+
+    def test_index(self):
+        """Test if the index returns *something*."""
+        client = Client()
+        response = client.get('/')
+        self.assertEqual(response.status_code, 200)
