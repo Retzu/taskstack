@@ -20,6 +20,9 @@ class Member(models.Model):
     group = models.ForeignKey(Group, null=True, blank=True)
     current_task = models.OneToOneField('Task', null=True, blank=True)
 
+    def has_perm(self, perm, obj):
+        return self.user.has_perm(perm, obj)
+
     def __str__(self):
         if self.name is not None:
             return self.name
@@ -50,6 +53,12 @@ class Queue(models.Model):
 
     def __str__(self):
         return "{}'s queue".format(self.member.user.username)
+
+    class Meta:
+        permissions = (
+            ('add_to_queue', 'Add a task to queue'),
+            ('remove_from_queue', 'Remove task from queue'),
+        )
 
 
 class Task(models.Model):

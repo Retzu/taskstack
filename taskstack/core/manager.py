@@ -2,6 +2,7 @@
 from django.contrib.auth.models import User
 from core.models import Member, Queue
 from django.db import transaction
+from guardian.shortcuts import assign_perm
 
 
 def create_member(email, password, name=None, group=None):
@@ -16,6 +17,9 @@ def create_member(email, password, name=None, group=None):
 
         queue = Queue(member=member)
         queue.save()
+
+        assign_perm('add_to_queue', member.user, queue)
+        assign_perm('remove_from_queue', member.user, queue)
 
         member.save()
     return member
