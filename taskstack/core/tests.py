@@ -122,9 +122,7 @@ class WebInterfaceTestCase(SimpleTestCase):
     """Test the web frontend."""
 
     def test_index(self):
-        """
-        Test if the index returns a redirect to login when not logged in.
-        """
+        """Test if the index returns a redirect to login when not logged in."""
         client = Client()
         response = client.get('/', follow=True)
         self.assertRedirects(response, '/login?next=/')
@@ -178,8 +176,7 @@ class WebInterfaceTestCase(SimpleTestCase):
         self.assertFormError(response, 'form', None, 'Passwords don\'t match!')
 
     def test_user_exists(self):
-        """
-        Test what happens when somebody tries to register a new user
+        """Test what happens when somebody tries to register a new user
         when the used email address is already in use.
         """
         client = Client()
