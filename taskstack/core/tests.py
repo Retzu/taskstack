@@ -31,11 +31,12 @@ class MemberTestCase(TestCase):
             Member.create(email='john2@example.com', password='john1234', name='John Doe')
 
     def test_delete_user(self):
+        """Test if we can delete users."""
         john = Member.create(email='john3@example.com', password='john1234', name='John Doe')
         self.assertIsNotNone(Member.objects.get(user__email='john3@example.com'))
         john.delete()
         with self.assertRaises(ObjectDoesNotExist):
-            where_are_you_john = Member.objects.get(user__email='john3@example.com')
+            Member.objects.get(user__email='john3@example.com')
 
 
 class GroupTestCase(TestCase):
@@ -203,6 +204,7 @@ class WebInterfaceTestCase(SimpleTestCase):
         self.assertFormError(response, 'form', 'email', 'User already exists!')
 
     def test_register_redirect(self):
+        """Test if going to /register when logged in redirects to /."""
         client = Client()
         response = client.post('/register', data={
             'email': 'new.user@example.com',
@@ -217,6 +219,7 @@ class WebInterfaceTestCase(SimpleTestCase):
         self.assertRedirects(response, '/')
 
     def test_already_logged_in(self):
+        """Test if going to /login when logged in redirects to /."""
         client = Client()
         response = client.post('/register', data={
             'email': 'new.user2@example.com',
