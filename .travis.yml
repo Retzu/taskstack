@@ -13,7 +13,6 @@ env:
 
 before_script:
     - psql -c 'create database taskstack;' -U postgres
-    - python3 taskstack/manage.py syncdb
     - python3 taskstack/manage.py makemigrations
     - python3 taskstack/manage.py migrate
 
