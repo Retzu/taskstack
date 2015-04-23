@@ -57,6 +57,12 @@ Why did you call it 'Taskstack' when it's clearly a queue dummy!
 ----------------------------------------------------------------
 Taskqueue sounds and looks weird. I mean look at it--'Queue'! Just a weird word. That's the only reason. I imagine it as a stack of notes on one's desk.
 
+Web interface
+-------------
+Imagine something a little like Trello. As a taskmaster you can switch between groups and see all of its assignees and their queues. Unassigned tasks will have a special place from where they can be assigned. You can also remove tasks from any queue but not set a task as "Doing". That's something an assignee needs to do on their own.
+
+As an assignee you can only see your own queue, remove tasks, mark your current task as done and set the next task as your current task.
+
 Technical side of things
 ========================
 Python
