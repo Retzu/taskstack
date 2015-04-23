@@ -116,6 +116,12 @@ class QueueTestCase(TestCase):
 
         self.assertIsNone(member.current_task)
 
+    def test_last_queue(self):
+        group = Group.objects.create(name='Last Queue Group')
+        member = Member.create(email='john_last_queue@example.com', password='password', name='John Doe', group=group)
+
+        
+
 
 class PermissionTestCase(TestCase):
 

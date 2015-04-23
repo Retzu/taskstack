@@ -102,6 +102,7 @@ class Queue(models.Model):
             raise QueueFullException('You cannot add more than {} tasks to this queue'.format(self.limit))
         else:
             self.tasks.add(task)
+            task.last_queue = self
             task.added_to_queue = datetime.now()
 
     def is_full(self):
@@ -140,8 +141,11 @@ class Task(models.Model):
     Pretty much self explanatory except for `added_to_queue`. I'm not sure yet
     whether to use a date here or some other method of keeping tasks in order.
     (the order they were added to a queue)
+    `last_queue` keeps track of the last queue the task was in to be able to
+    enforce rule #8
     """
     queue = models.ForeignKey(Queue, related_name='tasks', null=True, blank=True)
+    last_queue = models.ForeignKey(Queue, null=True, blank=True)
     group = models.ForeignKey(Group, related_name='tasks')
     title = models.TextField()
     text = models.TextField()
