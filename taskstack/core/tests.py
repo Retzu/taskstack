@@ -54,14 +54,11 @@ class GroupTestCase(TestCase):
         group = Group.objects.create(name="Test Group")
 
         # Create 10 users
-        users = []
         for i in range(10):
-            users.append(
-                Member.create(email='user{}@example.com'.format(i),
-                              password='password',
-                              name='User #{}'.format(i),
-                              group=group)
-            )
+            Member.create(email='user{}@example.com'.format(i),
+                          password='password',
+                          name='User #{}'.format(i),
+                          group=group)
 
         self.assertEqual(group.members.count(), 10)
 
