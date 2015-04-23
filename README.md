@@ -56,7 +56,7 @@ Technical side of things
 ========================
 Python
 ------
-Python 3 is the way to go here. It's also recommended to use virtualenv to install the things listed in requirements.txt using pip. It doesn't matter to Python or Django where exactly you put the virtualenv but I suggest to just create it in the directory you cloned the repo to since the directory `venv/` is already in `.gitignore`. Here's the basic procedure: 
+Python 3 is the way to go here. It's also recommended to use virtualenv to install the things listed in `requirements.txt` using pip. It doesn't matter to Python or Django where exactly you put the virtualenv but I suggest to just create it in the directory you cloned the repo to since the directory `venv/` is already in `.gitignore`. Here's the basic procedure:
 
 ```
 $ cd taskstack
@@ -71,7 +71,7 @@ There's a script for starting a PostgreSQL Docker container that works for defau
 
 Django
 ------
-While developing, you should run Django with `manage.py runserver`. DB host, DB name, username and password default to `localhost` and `taskstack` can be changed by running Django with env variables (see `settings.py`). Docker, Gunicorn and nginx will be involved in the future but we'll figure out the magic later.
+While developing, you should run Django with `manage.py runserver`. DB host, DB name, username and password default to `localhost` and `taskstack` and can be changed by running Django with env variables (see `settings.py`). Docker, Gunicorn and nginx will be involved in the future but we'll figure out the magic later.
 
 Ubuntu
 ------

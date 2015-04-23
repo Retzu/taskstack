@@ -68,7 +68,7 @@ class GroupTestCase(TestCase):
 
 class QueueTestCase(TestCase):
 
-    """Test messings with queues."""
+    """Test messing with queues."""
 
     def test_queue_limit(self):
         """Test if we can go over a queue's task limit."""
@@ -78,7 +78,6 @@ class QueueTestCase(TestCase):
             task = Task(title='Task #{}'.format(i), text='Task #{}'.format(i))
             member.queue.add_task(task)
             self.assertGreater(len(task.__str__()), 0)
-
 
         member = Member.objects.get(user__username='john4@example.com')
         self.assertEqual(member.queue.tasks.count(), member.queue.limit)

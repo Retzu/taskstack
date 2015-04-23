@@ -1,7 +1,16 @@
 from django.contrib import admin
-from . import models
+from core.models import Member, Queue, Task
+from guardian.admin import GuardedModelAdmin
 
-admin.site.register(models.Member)
-admin.site.register(models.Queue)
-admin.site.register(models.Task)
 
+class MemberAdmin(GuardedModelAdmin):
+    pass
+
+
+class QueueAdmin(GuardedModelAdmin):
+    pass
+
+
+admin.site.register(Member, MemberAdmin)
+admin.site.register(Queue, QueueAdmin)
+admin.site.register(Task)
