@@ -120,7 +120,12 @@ class QueueTestCase(TestCase):
         group = Group.objects.create(name='Last Queue Group')
         member = Member.create(email='john_last_queue@example.com', password='password', name='John Doe', group=group)
 
-        
+        task = Task.objects.create(title='My task', text='My task', group=group)
+        member.queue.add_task(task)
+        member.queue.remove_task(task)
+
+        self.assertIsNone(task.queue)
+        self.assertEqual(task.last_queue, member.queue)
 
 
 class PermissionTestCase(TestCase):

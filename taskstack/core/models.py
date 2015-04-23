@@ -105,6 +105,10 @@ class Queue(models.Model):
             task.last_queue = self
             task.added_to_queue = datetime.now()
 
+    def remove_task(self, task):
+        self.tasks.remove(task)
+        task.queue = None
+
     def is_full(self):
         """Return whether the queue has reached its maximum number of tasks."""
         return self.tasks.count() >= self.limit
@@ -145,7 +149,7 @@ class Task(models.Model):
     enforce rule #8
     """
     queue = models.ForeignKey(Queue, related_name='tasks', null=True, blank=True)
-    last_queue = models.ForeignKey(Queue, null=True, blank=True)
+    last_queue = models.ForeignKey(Queue, related_name='_last_queue_set', null=True, blank=True)
     group = models.ForeignKey(Group, related_name='tasks')
     title = models.TextField()
     text = models.TextField()
