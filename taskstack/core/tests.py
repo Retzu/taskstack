@@ -70,9 +70,10 @@ class QueueTestCase(TestCase):
     def test_queue_limit(self):
         """Test if we can go over a queue's task limit."""
         # First fill the queue with as many tasks it can hold
-        member = Member.create(email='john4@example.com', password='john1234', name='John Doe')
+        group = Group.objects.create(name='Task Group')
+        member = Member.create(email='john4@example.com', password='john1234', name='John Doe', group=group)
         for i in range(member.queue.limit):
-            task = Task(title='Task #{}'.format(i), text='Task #{}'.format(i))
+            task = Task(title='Task #{}'.format(i), text='Task #{}'.format(i), group=group)
             member.queue.add_task(task)
             self.assertGreater(len(task.__str__()), 0)
 
@@ -84,6 +85,36 @@ class QueueTestCase(TestCase):
             member.queue.add_task(Task(title='Task #11', text='This task should not be accepted'))
 
         self.assertEqual(member.queue.tasks.count(), member.queue.limit)
+
+    def test_queue_order(self):
+        """Tests if added tasks are being worked on in the right order."""
+        group = Group.objects.create(name='Queue Order Group')
+        member = Member.create(email='john_test@example.com', password='password', name='John Doe', group=group)
+
+        oldest_task = Task.objects.create(title='Oldest task', text='Oldest task', group=group)
+        other_task = Task.objects.create(title='Other task', text='Other task', group=group)
+        newest_task = Task.objects.create(title='Newest task', text='Newest task', group=group)
+
+        member.queue.add_task(oldest_task)
+        member.queue.add_task(other_task)
+        member.queue.add_task(newest_task)
+
+        self.assertIsNone(member.current_task)
+        member.work_on_next()
+
+        self.assertEqual(member.current_task, oldest_task)
+        member.work_on_next()
+        self.assertTrue(Task.objects.get(pk=oldest_task.id).done)
+
+        self.assertEqual(member.current_task, other_task)
+        member.work_on_next()
+        self.assertTrue(Task.objects.get(pk=other_task.id).done)
+
+        self.assertEqual(member.current_task, newest_task)
+        member.work_on_next()
+        self.assertTrue(Task.objects.get(pk=newest_task.id).done)
+
+        self.assertIsNone(member.current_task)
 
 
 class PermissionTestCase(TestCase):

@@ -3,7 +3,7 @@ from django.db import models
 from django.utils.datetime_safe import datetime
 from guardian.shortcuts import assign_perm, remove_perm
 from taskstack import settings
-from core.exceptions import QueueFullException
+from core.exceptions import QueueFullException, UserAlreadyWorkingException
 
 
 class Group(models.Model):
@@ -44,8 +44,26 @@ class Member(models.Model):
     def has_perm(self, perm, obj):
         return self.user.has_perm(perm, obj)
 
+    def work_on_next(self):
+        """Tell a member to work on the next task in the queue"""
+        self.current_task_done()
+        # Get the oldest (=next) task
+        try:
+            task = self.queue.tasks.filter(done=False).order_by('-added_to_queue')[0]
+            self.current_task = task
+        except IndexError:
+            self.current_task = None
+        self.save()
+
+    def current_task_done(self):
+        """Mark the current task as done."""
+        if self.current_task is not None:
+            self.current_task.mark_as_done()
+            self.current_task = None
+
     @classmethod
     def create(cls, email, password, name=None, group=None):
+        """Creates a new member, an attached Django user and a queue."""
         member = cls(name=name, group=group)
 
         user = User.objects.create_user(username=email, email=email, password=password)
@@ -81,7 +99,7 @@ class Queue(models.Model):
         If you read this and have a better idea that enables us to use add, go ahead.
         """
         if self.is_full():
-            raise QueueFullException("You cannot add more than {} tasks to this queue".format(self.limit))
+            raise QueueFullException('You cannot add more than {} tasks to this queue'.format(self.limit))
         else:
             self.tasks.add(task)
             task.added_to_queue = datetime.now()
@@ -123,11 +141,18 @@ class Task(models.Model):
     whether to use a date here or some other method of keeping tasks in order.
     (the order they were added to a queue)
     """
-    queue = models.ForeignKey(Queue, related_name='tasks')
+    queue = models.ForeignKey(Queue, related_name='tasks', null=True, blank=True)
+    group = models.ForeignKey(Group, related_name='tasks')
     title = models.TextField()
     text = models.TextField()
     created = models.DateTimeField(auto_now=True)
     added_to_queue = models.DateTimeField(null=True, blank=True)
+    done = models.BooleanField(default=False)
+
+    def mark_as_done(self):
+        self.done = True
+        self.queue = None
+        self.save()
 
     def __str__(self):
-        return "{}: {}...".format(self.title, self.text[:20])
+        return '{}: {}...'.format(self.title, self.text[:20])
