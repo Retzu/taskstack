@@ -55,10 +55,11 @@ class GroupTestCase(TestCase):
 
         # Create 10 users
         for i in range(10):
-            Member.create(email='user{}@example.com'.format(i),
-                          password='password',
-                          name='User #{}'.format(i),
-                          group=group)
+            group.add_member(
+                Member.create(email='user{}@example.com'.format(i),
+                              password='password',
+                              name='User #{}'.format(i))
+            )
 
         self.assertEqual(group.members.count(), 10)
 
@@ -71,7 +72,8 @@ class QueueTestCase(TestCase):
         """Test if we can go over a queue's task limit."""
         # First fill the queue with as many tasks it can hold
         group = Group.objects.create(name='Task Group')
-        member = Member.create(email='john4@example.com', password='john1234', name='John Doe', group=group)
+        member = Member.create(email='john4@example.com', password='john1234', name='John Doe')
+        group.add_member(member)
         for i in range(member.queue.limit):
             task = Task(title='Task #{}'.format(i), text='Task #{}'.format(i), group=group)
             member.queue.add_task(task)
@@ -89,7 +91,8 @@ class QueueTestCase(TestCase):
     def test_queue_order(self):
         """Tests if added tasks are being worked on in the right order."""
         group = Group.objects.create(name='Queue Order Group')
-        member = Member.create(email='john_test@example.com', password='password', name='John Doe', group=group)
+        member = Member.create(email='john_test@example.com', password='password', name='John Doe')
+        group.add_member(member)
 
         oldest_task = Task.objects.create(title='Oldest task', text='Oldest task', group=group)
         other_task = Task.objects.create(title='Other task', text='Other task', group=group)
@@ -118,7 +121,8 @@ class QueueTestCase(TestCase):
 
     def test_last_queue(self):
         group = Group.objects.create(name='Last Queue Group')
-        member = Member.create(email='john_last_queue@example.com', password='password', name='John Doe', group=group)
+        member = Member.create(email='john_last_queue@example.com', password='password', name='John Doe')
+        group.add_member(member)
 
         task = Task.objects.create(title='My task', text='My task', group=group)
         member.queue.add_task(task)
@@ -152,18 +156,25 @@ class PermissionTestCase(TestCase):
         group = Group.objects.create(name="My Group #1")
         taskmaster = Member.create(email='taskmaster@example.com', password='taskmaster', name='Taskmaster')
 
-        john = Member.create(email='john6@example.com', password='john1234', name='John Doe', group=group)
+        john = Member.create(email='john6@example.com', password='john1234', name='John Doe')
+        group.add_member(john)
         jane = Member.create(email='jane6@example.com', password='jane1234', name='Jane Doe', group=group)
+        group.add_member(jane)
 
         group.add_taskmaster(taskmaster)
 
+        dog = Member.create(email='dog@example.com', password='password', name='Dog', group=group)
+        group.add_member(dog)
+
         self.assertTrue(taskmaster.has_perm('add_to_queue', john.queue))
         self.assertTrue(taskmaster.has_perm('add_to_queue', jane.queue))
+        self.assertTrue(taskmaster.has_perm('add_to_queue', dog.queue))
 
         group.remove_taskmaster(taskmaster)
 
         self.assertFalse(taskmaster.has_perm('add_to_queue', john.queue))
         self.assertFalse(taskmaster.has_perm('add_to_queue', jane.queue))
+        self.assertFalse(taskmaster.has_perm('add_to_queue', dog.queue))
 
 
 class WebInterfaceTestCase(SimpleTestCase):
@@ -284,7 +295,7 @@ class WebInterfaceTestCase(SimpleTestCase):
     def test_login(self):
         """Test if /login works."""
         client = Client()
-        response = client.post('/register', data={
+        client.post('/register', data={
             'email': 'test.login@example.com',
             'name': 'Testy McGee',
             'password': 'password',

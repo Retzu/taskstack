@@ -11,6 +11,24 @@ class Group(models.Model):
     name = models.TextField()
     taskmasters = models.ManyToManyField('Member', related_name='taskmasters')
 
+    def add_member(self, member):
+        """
+        Add a member to this group and also update permissions for taskmasters.
+        Do *not* use Group.members.add, only this method!
+        """
+        self.members.add(member)
+        for taskmaster in self.taskmasters.all():
+            member.queue.grant_modify_permissions(taskmaster)
+
+    def remove_member(self, member):
+        """
+        Remove a member from this group and update permissions for taskmasters.
+        Do *not* use Group.members.remove, only this method!
+        """
+        self.members.remove(member)
+        for taskmaster in self.taskmasters.all():
+            member.queue.revoke_modify_permissions(taskmaster)
+
     def add_taskmaster(self, member):
         """
         Add member as a taskmaster to this group. Do so by
@@ -146,7 +164,9 @@ class Task(models.Model):
     whether to use a date here or some other method of keeping tasks in order.
     (the order they were added to a queue)
     `last_queue` keeps track of the last queue the task was in to be able to
-    enforce rule #8
+    enforce rule #8.
+    Also, tasks always have a group. Task without a Member but a group are "loose" tasks
+    that lie around ready to be assigned to someone in the group.
     """
     queue = models.ForeignKey(Queue, related_name='tasks', null=True, blank=True)
     last_queue = models.ForeignKey(Queue, related_name='_last_queue_set', null=True, blank=True)
