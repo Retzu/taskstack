@@ -55,11 +55,10 @@ class GroupTestCase(TestCase):
 
         # Create 10 users
         for i in range(10):
-            group.add_member(
-                Member.create(email='user{}@example.com'.format(i),
-                              password='password',
-                              name='User #{}'.format(i))
-            )
+            Member.create(email='user{}@example.com'.format(i),
+                          password='password',
+                          name='User #{}'.format(i),
+                          group=group)
 
         self.assertEqual(group.members.count(), 10)
 
@@ -72,8 +71,7 @@ class QueueTestCase(TestCase):
         """Test if we can go over a queue's task limit."""
         # First fill the queue with as many tasks it can hold
         group = Group.objects.create(name='Task Group')
-        member = Member.create(email='john4@example.com', password='john1234', name='John Doe')
-        group.add_member(member)
+        member = Member.create(email='john4@example.com', password='john1234', name='John Doe', group=group)
         for i in range(member.queue.limit):
             task = Task(title='Task #{}'.format(i), text='Task #{}'.format(i), group=group)
             member.queue.add_task(task)
@@ -91,8 +89,7 @@ class QueueTestCase(TestCase):
     def test_queue_order(self):
         """Tests if added tasks are being worked on in the right order."""
         group = Group.objects.create(name='Queue Order Group')
-        member = Member.create(email='john_test@example.com', password='password', name='John Doe')
-        group.add_member(member)
+        member = Member.create(email='john_test@example.com', password='password', name='John Doe', group=group)
 
         oldest_task = Task.objects.create(title='Oldest task', text='Oldest task', group=group)
         other_task = Task.objects.create(title='Other task', text='Other task', group=group)
@@ -121,8 +118,7 @@ class QueueTestCase(TestCase):
 
     def test_last_queue(self):
         group = Group.objects.create(name='Last Queue Group')
-        member = Member.create(email='john_last_queue@example.com', password='password', name='John Doe')
-        group.add_member(member)
+        member = Member.create(email='john_last_queue@example.com', password='password', name='John Doe', group=group)
 
         task = Task.objects.create(title='My task', text='My task', group=group)
         member.queue.add_task(task)
@@ -141,40 +137,33 @@ class PermissionTestCase(TestCase):
         john = Member.create(email='john5@example.com', password='john1234', name='John Doe')
         jane = Member.create(email='jane5@example.com', password='jane1234', name='Jane Doe')
 
-        self.assertTrue(john.has_perm('add_to_queue', john.queue))
-        self.assertTrue(jane.has_perm('add_to_queue', jane.queue))
-        self.assertTrue(john.has_perm('remove_from_queue', john.queue))
-        self.assertTrue(jane.has_perm('remove_from_queue', jane.queue))
+        self.assertTrue(john.queue.member_can_modify(john))
+        self.assertTrue(jane.queue.member_can_modify(jane))
 
-        self.assertFalse(john.has_perm('add_to_queue', jane.queue))
-        self.assertFalse(jane.has_perm('add_to_queue', john.queue))
-        self.assertFalse(john.has_perm('remove_from_queue', jane.queue))
-        self.assertFalse(jane.has_perm('remove_from_queue', john.queue))
+        self.assertFalse(john.queue.member_can_modify(jane))
+        self.assertFalse(jane.queue.member_can_modify(john))
 
     def test_taskmaster(self):
         """Test if taskmasters have the right permissions to queues."""
         group = Group.objects.create(name="My Group #1")
         taskmaster = Member.create(email='taskmaster@example.com', password='taskmaster', name='Taskmaster')
 
-        john = Member.create(email='john6@example.com', password='john1234', name='John Doe')
-        group.add_member(john)
+        john = Member.create(email='john6@example.com', password='john1234', name='John Doe', group=group)
         jane = Member.create(email='jane6@example.com', password='jane1234', name='Jane Doe', group=group)
-        group.add_member(jane)
 
-        group.add_taskmaster(taskmaster)
+        group.taskmasters.add(taskmaster)
 
         dog = Member.create(email='dog@example.com', password='password', name='Dog', group=group)
-        group.add_member(dog)
 
-        self.assertTrue(taskmaster.has_perm('add_to_queue', john.queue))
-        self.assertTrue(taskmaster.has_perm('add_to_queue', jane.queue))
-        self.assertTrue(taskmaster.has_perm('add_to_queue', dog.queue))
+        self.assertTrue(john.queue.member_can_modify(taskmaster))
+        self.assertTrue(jane.queue.member_can_modify(taskmaster))
+        self.assertTrue(dog.queue.member_can_modify(taskmaster))
 
-        group.remove_taskmaster(taskmaster)
+        group.taskmasters.remove(taskmaster)
 
-        self.assertFalse(taskmaster.has_perm('add_to_queue', john.queue))
-        self.assertFalse(taskmaster.has_perm('add_to_queue', jane.queue))
-        self.assertFalse(taskmaster.has_perm('add_to_queue', dog.queue))
+        self.assertFalse(john.queue.member_can_modify(taskmaster))
+        self.assertFalse(jane.queue.member_can_modify(taskmaster))
+        self.assertFalse(dog.queue.member_can_modify(taskmaster))
 
 
 class WebInterfaceTestCase(SimpleTestCase):

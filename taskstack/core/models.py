@@ -1,52 +1,14 @@
 from django.contrib.auth.models import User
 from django.db import models
 from django.utils.datetime_safe import datetime
-from guardian.shortcuts import assign_perm, remove_perm
 from taskstack import settings
-from core.exceptions import QueueFullException, UserAlreadyWorkingException
+from core.exceptions import QueueFullException
 
 
 class Group(models.Model):
     """A group as described in README.md."""
     name = models.TextField()
     taskmasters = models.ManyToManyField('Member', related_name='taskmasters')
-
-    def add_member(self, member):
-        """
-        Add a member to this group and also update permissions for taskmasters.
-        Do *not* use Group.members.add, only this method!
-        """
-        self.members.add(member)
-        for taskmaster in self.taskmasters.all():
-            member.queue.grant_modify_permissions(taskmaster)
-
-    def remove_member(self, member):
-        """
-        Remove a member from this group and update permissions for taskmasters.
-        Do *not* use Group.members.remove, only this method!
-        """
-        self.members.remove(member)
-        for taskmaster in self.taskmasters.all():
-            member.queue.revoke_modify_permissions(taskmaster)
-
-    def add_taskmaster(self, member):
-        """
-        Add member as a taskmaster to this group. Do so by
-        adding it to the taskmaster and granting them permissions to
-        the queues of every member
-        """
-        self.taskmasters.add(member)
-        for group_member in self.members.all():
-            group_member.queue.grant_modify_permissions(member)
-
-    def remove_taskmaster(self, member):
-        """
-        Remove a member from taskmasters by removing them from
-        the relation and revoking any permissions on the queues.
-        """
-        self.taskmasters.remove(member)
-        for group_member in self.members.all():
-            group_member.queue.revoke_modify_permissions(member)
 
 
 class Member(models.Model):
@@ -92,8 +54,6 @@ class Member(models.Model):
         queue = Queue(member=member)
         queue.save()
 
-        queue.grant_modify_permissions(member)
-
         member.save()
 
         return member
@@ -131,21 +91,19 @@ class Queue(models.Model):
         """Return whether the queue has reached its maximum number of tasks."""
         return self.tasks.count() >= self.limit
 
-    def grant_modify_permissions(self, member):
+    def member_can_modify(self, member):
         """
-        Grant a member permissions to modify this queue. This can be
-        the member who owns this queue or a taskmaster
+        Checks if a member is allowed to modify this queue.
+        Members who are allowed to modify the queue are the owner of the queue
+        and taskmasters of the same group the owner belongs to.
         """
-        assign_perm('add_to_queue', member.user, self)
-        assign_perm('remove_from_queue', member.user, self)
+        if member is self.member:
+            return True
 
-    def revoke_modify_permissions(self, member):
-        """
-        Revoke modifying permissions from a member to this queue. Most
-        likely to be used on taskmasters.
-        """
-        remove_perm('add_to_queue', member.user, self)
-        remove_perm('remove_from_queue', member.user, self)
+        if self.member.group:
+            return member in self.member.group.taskmasters.all()
+        else:
+            return False
 
     def __str__(self):
         return "{}'s queue".format(self.member.user.username)
