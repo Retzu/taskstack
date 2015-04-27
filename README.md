@@ -91,3 +91,17 @@ On Ubuntu you need to install `libpq-dev` to be able to install `psycopg2` with 
 Arch Linux
 ----------
 On Arch you need to install `postgresql-libs`
+
+Windows
+-------
+So you decided to develop on Windows? May the FSM have mercy on your twisted soul...
+
+Well first of all, you'll need PostgreSQL. I suggest you [PostgreSQL Portable](http://sourceforge.net/projects/postgresqlportable/) because much like Docker, it doesn't litter your system with files. Start PostreSQL Portable and execute these commands to create a user and a database:
+```SQL
+CREATE USER taskstack WITH PASSWORD 'taskstack';
+CREATE DATABASE taskstack;
+GRANT ALL PRIVILEGES ON DATABASE taskstack TO taskstack;
+ALTER USER taskstack CREATEDB; -- needed for test databases
+```
+
+Secondly, you cannot use pip to install `psycopg2` because you can't compile stuff on Windows without having Visual Studio set up and what not. So, create a regular virtualenv and install every requirement in `requirements.txt` via pip except `psycopg2`. To install `psycopg2` you need to download a precompiled wheel file from [here](http://www.lfd.uci.edu/~gohlke/pythonlibs/#psycopg) (take the 32-bit version for Python 3.4, the 64-bit version didn't work for me and it shouldn't make any difference). Now install that file with `pip install that-wheel-file.whl`. Everything should be set up now and you should be able to run `python taskstack\manage.py test core`.
