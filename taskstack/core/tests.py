@@ -30,6 +30,7 @@ class MemberTestCase(TestCase):
             Member.objects.create_user(password='no email', name='Blabla')
 
     def test_create_superuser(self):
+        """Test the creation of superusers."""
         Member.objects.create_superuser(email='superuser@example.com', password='superuser', name='Superuser')
         with self.assertRaises(ValueError):
             Member.objects.create_superuser(password='superuser', name='Superuser')
