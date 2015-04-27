@@ -53,12 +53,11 @@ def register(request):
     if request.method == 'POST':
         form = RegisterForm(request.POST)
         if form.is_valid():
-            member = Member.create(email=form.cleaned_data['email'],
-                          password=form.cleaned_data['password'],
-                          name=form.cleaned_data['name'])
-            member.save()
+            Member.objects.create_user(email=form.cleaned_data['email'],
+                                       password=form.cleaned_data['password'],
+                                       name=form.cleaned_data['name'])
 
-            user = authenticate(username=form.cleaned_data['email'],
+            user = authenticate(email=form.cleaned_data['email'],
                                 password=form.cleaned_data['password'])
             login(request, user)
             return redirect(reverse('index'))

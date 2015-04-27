@@ -42,7 +42,6 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'guardian',
     'rest_framework',
     'core',
 )
@@ -56,20 +55,6 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
-
-########################
-# Settings necessary for django-guardian
-AUTHENTICATION_BACKENDS = (
-    'django.contrib.auth.backends.ModelBackend', # default
-    'guardian.backends.ObjectPermissionBackend',
-)
-
-ANONYMOUS_USER_ID = -1
-
-MIGRATION_MODULES = {
-  'guardian': 'taskstack.migrations.guardian',
-}
-########################
 
 ROOT_URLCONF = 'taskstack.urls'
 
@@ -118,6 +103,8 @@ LOGIN_URL = '/login'
 # https://docs.djangoproject.com/en/1.7/howto/static-files/
 
 STATIC_URL = '/static/'
+
+AUTH_USER_MODEL = 'core.Member'
 
 
 # Custom settings for Taskstack

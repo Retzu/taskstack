@@ -1,4 +1,4 @@
-from django.contrib.auth.models import User
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.db import models
 from django.utils.datetime_safe import datetime
 from taskstack import settings
@@ -11,18 +11,60 @@ class Group(models.Model):
     taskmasters = models.ManyToManyField('Member', related_name='taskmasters')
 
 
-class Member(models.Model):
+class MemberManager(BaseUserManager):
+
+    """
+    Custom user manager for Member because we don't have a `username` field and thus
+    can't use Django's `UserManager` class.
+    """
+
+    def create_user(self, email=None, password=None, name=None, group=None):
+        """Create a new user and a new queue for that user."""
+        if not email:
+            raise ValueError('The given email address must be set')
+
+        email = self.normalize_email(email)
+        member = self.model(email=email, name=name, group=group)
+        member.set_password(password)
+        member.save(using=self._db)
+        queue = Queue(member=member)
+        queue.save(using=self._db)
+        return member
+
+    def create_superuser(self, email, password, name, group):
+        """Same as `create_user` with with `is_admin = True`."""
+        if not email:
+            raise ValueError('The given email address must be set')
+
+        email = self.normalize_email(email)
+        member = self.model(email=email, name=name, group=group)
+        member.is_admin = True
+        member.set_password(password)
+        member.save(using=self._db)
+        queue = Queue(member=member)
+        queue.save(using=self._db)
+        return member
+
+
+class Member(AbstractBaseUser):
     """
     A member as described in README.md.
     Members can be without a group.
     """
-    user = models.OneToOneField(User, unique=True)
+    email = models.EmailField(unique=True)
     name = models.TextField(null=True, blank=True)
     group = models.ForeignKey(Group, null=True, blank=True, related_name='members')
     current_task = models.OneToOneField('Task', null=True, blank=True)
+    objects = MemberManager()
+    USERNAME_FIELD = 'email'
 
-    def has_perm(self, perm, obj):
-        return self.user.has_perm(perm, obj)
+    def get_full_name(self):
+        """Implemented from AbstractBaseUser."""
+        return self.name
+
+    def get_short_name(self):
+        """Implemented from AbstractBaseUser."""
+        return self.email
 
     def work_on_next(self):
         """Tell a member to work on the next task in the queue"""
@@ -41,28 +83,11 @@ class Member(models.Model):
             self.current_task.mark_as_done()
             self.current_task = None
 
-    @classmethod
-    def create(cls, email, password, name=None, group=None):
-        """Creates a new member, an attached Django user and a queue."""
-        member = cls(name=name, group=group)
-
-        user = User.objects.create_user(username=email, email=email, password=password)
-        member.user = user
-
-        member.save()
-
-        queue = Queue(member=member)
-        queue.save()
-
-        member.save()
-
-        return member
-
     def __str__(self):
-        if self.name is not None:
+        if self.name:
             return self.name
         else:
-            return self.user.email
+            return self.email
 
 
 class Queue(models.Model):
@@ -106,7 +131,7 @@ class Queue(models.Model):
             return False
 
     def __str__(self):
-        return "{}'s queue".format(self.member.user.username)
+        return "{}'s queue".format(self.member)
 
 
 class Task(models.Model):

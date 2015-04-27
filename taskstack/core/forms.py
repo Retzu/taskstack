@@ -26,7 +26,7 @@ class RegisterForm(forms.Form):
         """Look if there's already a user with that email address."""
         email = self.cleaned_data['email']
         try:
-            if Member.objects.get(user__email=email):
+            if Member.objects.get(email=email):
                 raise forms.ValidationError('User already exists!')
         except Member.DoesNotExist:
             pass

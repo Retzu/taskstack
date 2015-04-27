@@ -14,35 +14,35 @@ class MemberTestCase(TestCase):
 
     def test_manager_create_user(self):
         """Test if we can create a user using the manager."""
-        member = Member.create(email='john1@example.com', password='john1234', name='John Doe')
-        found_member = Member.objects.get(user__email='john1@example.com')
+        member = Member.objects.create_user(email='john1@example.com', password='john1234', name='John Doe')
+        found_member = Member.objects.get(email='john1@example.com')
         self.assertEqual(member, found_member)
         self.assertIsInstance(member.queue, Queue)
         # test __str__
         self.assertGreater(len(member.__str__()), 0)
         self.assertGreater(len(member.queue.__str__()), 0)
         # test __str__ for member without name
-        member = Member.create(email='john_@example.com', password='john1234')
+        member = Member.objects.create_user(email='john_@example.com', password='john1234')
         self.assertGreater(len(member.__str__()), 0)
 
     def test_user_does_not_exist(self):
         """Test if we can find a non-existent user."""
         with self.assertRaises(ObjectDoesNotExist):
-            Member.objects.get(user__username='Cartman')
+            Member.objects.get(email='Cartman')
 
     def test_duplicate_user(self):
         """Test if we can create the same user twice using the manager."""
         with self.assertRaises(IntegrityError):
-            Member.create(email='john2@example.com', password='john1234', name='John Doe')
-            Member.create(email='john2@example.com', password='john1234', name='John Doe')
+            Member.objects.create_user(email='john2@example.com', password='john1234', name='John Doe')
+            Member.objects.create_user(email='john2@example.com', password='john1234', name='John Doe')
 
     def test_delete_user(self):
         """Test if we can delete users."""
-        john = Member.create(email='john3@example.com', password='john1234', name='John Doe')
-        self.assertIsNotNone(Member.objects.get(user__email='john3@example.com'))
+        john = Member.objects.create_user(email='john3@example.com', password='john1234', name='John Doe')
+        self.assertIsNotNone(Member.objects.get(email='john3@example.com'))
         john.delete()
         with self.assertRaises(ObjectDoesNotExist):
-            Member.objects.get(user__email='john3@example.com')
+            Member.objects.get(email='john3@example.com')
 
 
 class GroupTestCase(TestCase):
@@ -55,10 +55,10 @@ class GroupTestCase(TestCase):
 
         # Create 10 users
         for i in range(10):
-            Member.create(email='user{}@example.com'.format(i),
-                          password='password',
-                          name='User #{}'.format(i),
-                          group=group)
+            Member.objects.create_user(email='user{}@example.com'.format(i),
+                                  password='password',
+                                  name='User #{}'.format(i),
+                                  group=group)
 
         self.assertEqual(group.members.count(), 10)
 
@@ -71,13 +71,13 @@ class QueueTestCase(TestCase):
         """Test if we can go over a queue's task limit."""
         # First fill the queue with as many tasks it can hold
         group = Group.objects.create(name='Task Group')
-        member = Member.create(email='john4@example.com', password='john1234', name='John Doe', group=group)
+        member = Member.objects.create_user(email='john4@example.com', password='john1234', name='John Doe', group=group)
         for i in range(member.queue.limit):
             task = Task(title='Task #{}'.format(i), text='Task #{}'.format(i), group=group)
             member.queue.add_task(task)
             self.assertGreater(len(task.__str__()), 0)
 
-        member = Member.objects.get(user__username='john4@example.com')
+        member = Member.objects.get(email='john4@example.com')
         self.assertEqual(member.queue.tasks.count(), member.queue.limit)
 
         # Add a another task and expect an exception
@@ -89,7 +89,7 @@ class QueueTestCase(TestCase):
     def test_queue_order(self):
         """Tests if added tasks are being worked on in the right order."""
         group = Group.objects.create(name='Queue Order Group')
-        member = Member.create(email='john_test@example.com', password='password', name='John Doe', group=group)
+        member = Member.objects.create_user(email='john_test@example.com', password='password', name='John Doe', group=group)
 
         oldest_task = Task.objects.create(title='Oldest task', text='Oldest task', group=group)
         other_task = Task.objects.create(title='Other task', text='Other task', group=group)
@@ -119,7 +119,7 @@ class QueueTestCase(TestCase):
     def test_last_queue(self):
         """Test if a task remembers the last queue it was in (for rule #8)."""
         group = Group.objects.create(name='Last Queue Group')
-        member = Member.create(email='john_last_queue@example.com', password='password', name='John Doe', group=group)
+        member = Member.objects.create_user(email='john_last_queue@example.com', password='password', name='John Doe', group=group)
 
         task = Task.objects.create(title='My task', text='My task', group=group)
         member.queue.add_task(task)
@@ -135,8 +135,8 @@ class PermissionTestCase(TestCase):
 
     def test_queue_permissions(self):
         """Test if members have the right permissions to queues."""
-        john = Member.create(email='john5@example.com', password='john1234', name='John Doe')
-        jane = Member.create(email='jane5@example.com', password='jane1234', name='Jane Doe')
+        john = Member.objects.create_user(email='john5@example.com', password='john1234', name='John Doe')
+        jane = Member.objects.create_user(email='jane5@example.com', password='jane1234', name='Jane Doe')
 
         self.assertTrue(john.queue.member_can_modify(john))
         self.assertTrue(jane.queue.member_can_modify(jane))
@@ -147,14 +147,14 @@ class PermissionTestCase(TestCase):
     def test_taskmaster(self):
         """Test if taskmasters have the right permissions to queues."""
         group = Group.objects.create(name="My Group #1")
-        taskmaster = Member.create(email='taskmaster@example.com', password='taskmaster', name='Taskmaster')
+        taskmaster = Member.objects.create_user(email='taskmaster@example.com', password='taskmaster', name='Taskmaster')
 
-        john = Member.create(email='john6@example.com', password='john1234', name='John Doe', group=group)
-        jane = Member.create(email='jane6@example.com', password='jane1234', name='Jane Doe', group=group)
+        john = Member.objects.create_user(email='john6@example.com', password='john1234', name='John Doe', group=group)
+        jane = Member.objects.create_user(email='jane6@example.com', password='jane1234', name='Jane Doe', group=group)
 
         group.taskmasters.add(taskmaster)
 
-        dog = Member.create(email='dog@example.com', password='password', name='Dog', group=group)
+        dog = Member.objects.create_user(email='dog@example.com', password='password', name='Dog', group=group)
 
         self.assertTrue(john.queue.member_can_modify(taskmaster))
         self.assertTrue(jane.queue.member_can_modify(taskmaster))
@@ -188,8 +188,7 @@ class WebInterfaceTestCase(SimpleTestCase):
         }, follow=True)
         self.assertRedirects(response, '/')
 
-        self.assertIsInstance(Member.objects.get(user__email='test1@example.com'), Member)
-        self.assertIsInstance(Member.objects.get(user__email='test1@example.com').user, User)
+        self.assertIsInstance(Member.objects.get(email='test1@example.com'), Member)
 
     def test_empty_form(self):
         """Test what happens when form is completely empty."""
@@ -239,7 +238,7 @@ class WebInterfaceTestCase(SimpleTestCase):
             'password_repeat': 'password'
         }, follow=True)
         self.assertEqual(response.status_code, 200)
-        self.assertIsInstance(Member.objects.get(user__email='existing@example.com'), Member)
+        self.assertIsInstance(Member.objects.get(email='existing@example.com'), Member)
 
         client.logout()
 
@@ -262,7 +261,7 @@ class WebInterfaceTestCase(SimpleTestCase):
             'password_repeat': 'password'
         }, follow=True)
         self.assertEqual(response.status_code, 200)
-        self.assertIsInstance(Member.objects.get(user__email='new.user@example.com'), Member)
+        self.assertIsInstance(Member.objects.get(email='new.user@example.com'), Member)
 
         response = client.get('/register')
         self.assertRedirects(response, '/')
@@ -277,7 +276,7 @@ class WebInterfaceTestCase(SimpleTestCase):
             'password_repeat': 'password'
         }, follow=True)
         self.assertEqual(response.status_code, 200)
-        self.assertIsInstance(Member.objects.get(user__email='new.user2@example.com'), Member)
+        self.assertIsInstance(Member.objects.get(email='new.user2@example.com'), Member)
 
         response = client.get('/login')
         self.assertRedirects(response, '/')
@@ -292,6 +291,7 @@ class WebInterfaceTestCase(SimpleTestCase):
             'password_repeat': 'password'
         }, follow=True)
         client.logout()
+        member = Member.objects.get_by_natural_key('test.login@example.com')
 
         response = client.post('/login', data={
             'username': 'test.login@example.com',
