@@ -11,18 +11,28 @@ class MemberTestCase(TestCase):
 
     """Test user creation/deletion."""
 
-    def test_manager_create_user(self):
+    def test_create_user(self):
         """Test if we can create a user using the manager."""
         member = Member.objects.create_user(email='john1@example.com', password='john1234', name='John Doe')
         found_member = Member.objects.get(email='john1@example.com')
         self.assertEqual(member, found_member)
         self.assertIsInstance(member.queue, Queue)
+        self.assertEqual(member.get_full_name(), 'John Doe')
+        self.assertEqual(member.get_short_name(), 'john1@example.com')
         # test __str__
         self.assertGreater(len(member.__str__()), 0)
         self.assertGreater(len(member.queue.__str__()), 0)
         # test __str__ for member without name
         member = Member.objects.create_user(email='john_@example.com', password='john1234')
         self.assertGreater(len(member.__str__()), 0)
+
+        with self.assertRaises(ValueError):
+            Member.objects.create_user(password='no email', name='Blabla')
+
+    def test_create_superuser(self):
+        Member.objects.create_superuser(email='superuser@example.com', password='superuser', name='Superuser')
+        with self.assertRaises(ValueError):
+            Member.objects.create_superuser(password='superuser', name='Superuser')
 
     def test_user_does_not_exist(self):
         """Test if we can find a non-existent user."""
