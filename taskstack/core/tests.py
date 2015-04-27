@@ -1,6 +1,5 @@
 """Unit Tests"""
 from unittest import TestCase
-from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import IntegrityError
 from django.test import Client, SimpleTestCase
@@ -291,7 +290,6 @@ class WebInterfaceTestCase(SimpleTestCase):
             'password_repeat': 'password'
         }, follow=True)
         client.logout()
-        member = Member.objects.get_by_natural_key('test.login@example.com')
 
         response = client.post('/login', data={
             'username': 'test.login@example.com',
