@@ -63,6 +63,10 @@ Imagine something a little like Trello. As a taskmaster you can switch between g
 
 As an assignee you can only see your own queue, remove tasks, mark your current task as done and set the next task as your current task.
 
+The whole thing will be rendered only once by Django and then we'll communicate with the server via AJAX calls and an API. Angular or React + an AJAX lib will be a thing.
+
+I started to toy around with a mockup over at Codepen: http://codepen.io/Retzudo/pen/QbweRm
+
 Technical side of things
 ========================
 Python
