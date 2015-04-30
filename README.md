@@ -100,7 +100,7 @@ Windows
 -------
 So you decided to develop on Windows? May the FSM have mercy on your twisted soul...
 
-Well first of all, you'll need PostgreSQL. I suggest you [PostgreSQL Portable](http://sourceforge.net/projects/postgresqlportable/) because much like Docker, it doesn't litter your system with files. Start PostreSQL Portable and execute these commands to create a user and a database:
+Well first of all, you'll need PostgreSQL. I suggest you use [PostgreSQL Portable](http://sourceforge.net/projects/postgresqlportable/) because much like Docker, it doesn't litter your system with files. You can of course use any kind of PostgreSQL server as long as there's one running on port 5432. Start PostreSQL Portable and execute these commands to create a user and a database:
 ```SQL
 CREATE USER taskstack WITH PASSWORD 'taskstack';
 CREATE DATABASE taskstack;
