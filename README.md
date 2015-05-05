@@ -12,6 +12,7 @@ The concept of Taskstack is dead simple
 1. You have a group of people
 2. One or more people in that group can assign tasks to members of the group
 3. Every assignee has personal FIFO (first in, first out) queue of tasks.
+4. This queue cannot be rearranged so once a task in in a queue, it *will* be completed.
 
 Why?
 ----
