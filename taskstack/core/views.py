@@ -42,9 +42,9 @@ def logout_view(request):
 
 def register(request):
     """
-    Show the register form and handle them. If the user already
+    Show the register form and handle it. If the user already
     is logged in, redirect them to the main interface. If form was
-    valid, create a new member using `Member`'s class method `create`
+    valid, create a new member using `Member`'s class method `create_user`
     and redirect them to the main interface.
     """
     if request.user.is_authenticated():
