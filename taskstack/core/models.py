@@ -33,16 +33,9 @@ class MemberManager(BaseUserManager):
 
     def create_superuser(self, email=None, password=None, name=None, group=None):
         """Same as `create_user` with with `is_admin = True`."""
-        if not email:
-            raise ValueError('The given email address must be set')
-
-        email = self.normalize_email(email)
-        member = self.model(email=email, name=name, group=group)
+        member = self.create_user(email=email, password=password, name=name, group=group)
         member.is_admin = True
-        member.set_password(password)
         member.save(using=self._db)
-        queue = Queue(member=member)
-        queue.save(using=self._db)
         return member
 
 
