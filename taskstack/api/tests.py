@@ -30,21 +30,25 @@ class ApiTest(unittest.TestCase):
     def test_user_info(self):
         """Test if we can get the same user info from two different resources."""
         self.client.login(email='api.tester@example.com', password='apitester')
-        data = self.client.get('/api/users/{}'.format(self.member.id))
+        content = self.client.get('/api/users/{}'.format(self.member.id)).content
 
-        self.assertEqual(data['email'], self.member.email)
-        self.assertEqual(data['name'], self.member.name)
-        self.assertListEqual(data['groups'], [self.group.id])
+        self.assertEqual(content['email'], self.member.email)
+        self.assertEqual(content['name'], self.member.name)
+        self.assertListEqual(content['groups'], [self.group.id])
 
-        self.assertEqual(data['tasks'], [])
-        self.assertEqual(data['currentTaskId'], None)
+        self.assertEqual(content['tasks'], [])
+        self.assertEqual(content['currentTaskId'], None)
 
         # Test alternate route
-        data = self.client.get('/api/me')
+        content = self.client.get('/api/me')
 
-        self.assertEqual(data['email'], self.member.email)
-        self.assertEqual(data['name'], self.member.name)
-        self.assertListEqual(data['groups'], [self.group.id])
+        self.assertEqual(content['email'], self.member.email)
+        self.assertEqual(content['name'], self.member.name)
+        self.assertListEqual(content['groups'], [self.group.id])
+
+        # Test non existent user
+        response = self.client.get('/api/users/{}'.format(self.member.id))
+        self.assertEqual(response.status_code, 404)
 
         self.client.logout()
 
@@ -225,5 +229,8 @@ class ApiTest(unittest.TestCase):
 
         response = self.client.delete('/api/tasks/{}'.format(task_id))
         self.assertEqual(response.status_code, 204)
+
+        response = self.client.get('/api/tasks/123456789')
+        self.assertEqual(response.status_code, 404)
 
         self.client.logout()
