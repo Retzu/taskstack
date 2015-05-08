@@ -27,6 +27,12 @@ class ApiTest(unittest.TestCase):
                                                      group=self.group)
         self.group.taskmasters.add(self.taskmaster)
 
+    def tearDown(self):
+        self.taskmaster.delete()
+        self.member.delete()
+        self.member_two.delete()
+        self.group.delete()
+
     def test_user_info(self):
         """Test if we can get the same user info from two different resources."""
         self.client.login(email='api.tester@example.com', password='apitester')
