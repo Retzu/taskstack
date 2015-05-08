@@ -12,7 +12,7 @@ class ApiTest(unittest.TestCase):
     def setUp(self):
         """Create two users, a group and a taskmaster"""
         self.client = APIClient()
-        self.group = Group.object.create(name='First Group')
+        self.group = Group.objects.create(name='First Group')
         self.member = Member.objects.create_user(email='api.tester@example.com',
                                                  password='apitester',
                                                  name='Api Tester',
