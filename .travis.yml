@@ -1,8 +1,15 @@
 language: python
+
 python:
     - "3.4"
+
 addons:
     postgresql: "9.3"
+    
+branch:
+    only:
+        - master
+
 install:
     - sudo apt-get update -qq
     - sudo apt-get install -y libpq-dev
