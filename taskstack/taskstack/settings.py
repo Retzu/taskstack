@@ -18,10 +18,13 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.7/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = ''.join([random.SystemRandom().choice('abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)') for i in range(50)])
+# Get secret key from env or create a random one
+SECRET_KEY = os.getenv(
+    'TASKSTACK_SECRET_KEY',
+    ''.join([random.SystemRandom().choice('abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)') for i in range(50)])
+)
 
-# If the env variable TASKSTAK_DEBUG has any value, set DEBUG to True
+# If the env variable TASKSTACK_DEBUG has any value, set DEBUG to True
 if os.getenv('TASKSTACK_DEBUG', False):
     DEBUG = True
     TEMPLATE_DEBUG = True
