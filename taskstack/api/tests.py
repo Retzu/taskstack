@@ -91,7 +91,7 @@ class ApiTest(unittest.TestCase):
         data = utils.response_to_json(self.client.get('/api/groups/{}'.format(self.group.id)))
 
         self.assertEqual(data['name'], self.group.name)
-        self.assertListEqual(data['members'], [self.member.id, self.member_two.id])
+        self.assertEqual(set(data['members']), {self.member.id, self.member_two.id, self.taskmaster.id})
 
         self.client.logout()
 
