@@ -25,12 +25,8 @@ SECRET_KEY = os.getenv(
 )
 
 # If the env variable TASKSTACK_DEBUG has any value, set DEBUG to True
-if os.getenv('TASKSTACK_DEBUG', False):
-    DEBUG = True
-    TEMPLATE_DEBUG = True
-else:
-    DEBUG = False
-    TEMPLATE_DEBUG = False
+DEBUG = 'TASKSTACK_DEBUG' in os.environ
+TEMPLATE_DEBUG = 'TASKSTACK_DEBUG' in os.environ
 
 
 ALLOWED_HOSTS = []

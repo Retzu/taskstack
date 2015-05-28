@@ -1,8 +1,28 @@
 """Unit tests for the API"""
 import unittest
 
-from rest_framework.test import APIClient
+from api import utils
 from core.models import Member, Group
+from rest_framework.test import APIClient
+from django.http import JsonResponse
+
+
+class UtilsTest(unittest.TestCase):
+
+    """Tests of utils.py"""
+
+    def test_json_decode(self):
+        d = {
+            'some': 'test',
+            'data': True,
+            'derp': 12345
+        }
+
+        response = JsonResponse(data=d)
+
+        decoded_data = utils.response_to_json(response)
+
+        self.assertEqual(d, decoded_data)
 
 
 class ApiTest(unittest.TestCase):
@@ -13,18 +33,24 @@ class ApiTest(unittest.TestCase):
         """Create two users, a group and a taskmaster"""
         self.client = APIClient()
         self.group = Group.objects.create(name='First Group')
-        self.member = Member.objects.create_user(email='api.tester@example.com',
-                                                 password='apitester',
-                                                 name='Api Tester',
-                                                 group=self.group)
-        self.member_two = Member.objects.create_user(email='api.tester2@example.com',
-                                                     password='apitester2',
-                                                     name='Api Tester Two',
-                                                     group=self.group)
-        self.taskmaster = Member.objects.create_user(email='api.taskmaster@example.com',
-                                                     password='taskmaster',
-                                                     name='Taskmaster',
-                                                     group=self.group)
+        self.member = Member.objects.create_user(
+            email='api.tester@example.com',
+            password='apitester',
+            name='Api Tester',
+            group=self.group
+        )
+        self.member_two = Member.objects.create_user(
+            email='api.tester2@example.com',
+            password='apitester2',
+            name='Api Tester Two',
+            group=self.group
+        )
+        self.taskmaster = Member.objects.create_user(
+            email='api.taskmaster@example.com',
+            password='taskmaster',
+            name='Taskmaster',
+            group=self.group
+        )
         self.group.taskmasters.add(self.taskmaster)
 
     def tearDown(self):
@@ -36,7 +62,7 @@ class ApiTest(unittest.TestCase):
     def test_user_info(self):
         """Test if we can get the same user info from two different resources."""
         self.client.login(email='api.tester@example.com', password='apitester')
-        content = self.client.get('/api/users/{}'.format(self.member.id)).content
+        content = utils.response_to_json(self.client.get('/api/users/{}'.format(self.member.id)))
 
         self.assertEqual(content['email'], self.member.email)
         self.assertEqual(content['name'], self.member.name)
@@ -61,7 +87,7 @@ class ApiTest(unittest.TestCase):
     def test_group_info(self):
         """Test if we can get info about the group"""
         self.client.login(email='api.tester@example.com', password='apitester')
-        data = self.client.get('/api/groups/{}'.format(self.group.id))
+        data = utils.response_to_json(self.client.get('/api/groups/{}'.format(self.group.id)))
 
         self.assertEqual(data['name'], self.group.name)
         self.assertListEqual(data['members'], [self.member.id, self.member_two.id])
@@ -77,11 +103,11 @@ class ApiTest(unittest.TestCase):
             'group': self.group.id
         }
 
-        content = self.client.post('/api/tasks', task).content
+        content = utils.response_to_json(self.client.post('/api/tasks', task))
 
         self.assertTrue('id' in content)
 
-        api_task = self.client.get('/api/tasks/{}'.format(content['id']))
+        api_task = utils.response_to_json(self.client.get('/api/tasks/{}'.format(content['id'])))
 
         self.assertEqual(api_task['title'], task['title'])
         self.assertEqual(api_task['text'], task['text'])
@@ -100,15 +126,15 @@ class ApiTest(unittest.TestCase):
             'group': self.group.id
         }
 
-        task_id = self.client.post('/api/tasks', task).content['id']
+        task_id = utils.response_to_json(self.client.post('/api/tasks', task))['id']
         self.client.put('/api/tasks/{}/assign-to'.format(task_id), {'memberId': self.member.id})
 
-        api_member = self.client.get('/api/users/{}'.format(self.member.id)).content
+        api_member = utils.response_to_json(self.client.get('/api/users/{}'.format(self.member.id)))
         self.assertEqual(api_member['currentTaskId'], task_id)
 
         self.client.put('/api/tasks/{}/done'.format(task_id))
-        api_task = self.client.get('/api/tasks/{}'.format(task_id)).content
-        api_member = self.client.get('/api/users/{}'.format(self.member.id)).content
+        api_task = utils.response_to_json(self.client.get('/api/tasks/{}'.format(task_id)))
+        api_member = utils.response_to_json(self.client.get('/api/users/{}'.format(self.member.id)))
         self.assertTrue(api_task['done'])
         self.assertIsNone(api_member['currentTaskId'])
 
@@ -125,7 +151,7 @@ class ApiTest(unittest.TestCase):
 
         # Create a new task
         response = self.client.post('/api/tasks', task)
-        task_id = response.content['id']
+        task_id = utils.response_to_json(response)['id']
         self.assertEqual(response.status_code, 200)
 
         # Assign the task to a user
@@ -136,7 +162,7 @@ class ApiTest(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
 
         # Check if the task's and the user's group are the same
-        api_task = self.client.get('/api/tasks/{}'.format(task_id)).content
+        api_task = utils.response_to_json(self.client.get('/api/tasks/{}'.format(task_id)))
         self.assertEqual(api_task['groupId'], self.group.id)
 
         # Check if we can reassign a task (or rather not)
@@ -154,7 +180,7 @@ class ApiTest(unittest.TestCase):
         }
 
         response = self.client.post('/api/tasks', task)
-        task_id = response.content['id']
+        task_id = utils.response_to_json(response)['id']
         self.assertEqual(response.status_code, 200)
 
         # Assign the task to another user
@@ -195,7 +221,7 @@ class ApiTest(unittest.TestCase):
         self.assertEqual(response.status_code, 400)
 
         # Add two tasks to the user's queue
-        task_id = self.client.post('/api/tasks', task).content['id']
+        task_id = utils.response_to_json(self.client.post('/api/tasks', task))['id']
         task_id_two = self.client.post('/api/tasks', task_two)
 
         self.client.put('/api/tasks/{}/assign-to'.format(task_id), {'memberId': self.member.id})
@@ -204,7 +230,7 @@ class ApiTest(unittest.TestCase):
         response = self.client.put('/api/users/{}/work-on-next'.format(self.member.id))
         self.assertEqual(response.status_code, 200)
 
-        content = self.client.get('/api/users/{}'.format(self.member.id)).content
+        content = utils.response_to_json(self.client.get('/api/users/{}'.format(self.member.id)))
         self.assertEqual(content['currentTaskId'], task_id)
 
         # Check if only the user can set a task as in progress
@@ -225,7 +251,7 @@ class ApiTest(unittest.TestCase):
             'text': 'Work on me',
             'group': self.group.id
         }
-        task_id = self.client.post('/api/tasks', task).content['id']
+        task_id = utils.response_to_json(self.client.post('/api/tasks', task))['id']
 
         response = self.client.delete('/api/tasks/{}'.format(task_id))
         self.assertEqual(response.status_code, 403)
