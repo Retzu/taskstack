@@ -12,6 +12,7 @@ class UtilsTest(unittest.TestCase):
     """Tests of utils.py"""
 
     def test_json_decode(self):
+        """Test if data from JsonResponses is extracted correctly."""
         d = {
             'some': 'test',
             'data': True,
