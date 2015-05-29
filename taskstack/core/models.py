@@ -2,13 +2,28 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.db import models
 from django.utils.datetime_safe import datetime
 from taskstack import settings
-from core.exceptions import QueueFullException
+from core.exceptions import QueueException, GroupException
 
 
 class Group(models.Model):
-    """A group as described in README.md."""
+    """A group as described in README.md.
+
+    Any user should be able to create groups and automatically
+    be its taskmaster.
+    """
     name = models.TextField()
     taskmasters = models.ManyToManyField('Member', related_name='taskmasters')
+    created_by = models.ForeignKey('Member', null=True, blank=True, related_name='groups_created')
+
+    def set_creator(self, user):
+        """Sets the creator of the group."""
+        if user.groups_created:
+            groups_created = len(user.groups_created.all())
+            if groups_created >= user.max_groups_created:
+                raise GroupException('User {} cannot create more than {} groups.'.format(user, groups_created))
+
+        self.taskmasters.add(user)
+        user.groups_created.add(self)
 
 
 class MemberManager(BaseUserManager):
@@ -40,14 +55,16 @@ class MemberManager(BaseUserManager):
 
 
 class Member(AbstractBaseUser):
-    """
-    A member as described in README.md.
-    Members can be without a group.
+    """A member as described in README.md.
+
+    Members can be without a group and can only create a number
+    of `max_groups_created` groups.
     """
     email = models.EmailField(unique=True)
     name = models.TextField(null=True, blank=True)
     group = models.ForeignKey(Group, null=True, blank=True, related_name='members')
     current_task = models.OneToOneField('Task', null=True, blank=True)
+    max_groups_created = models.IntegerField(default=settings.MAX_GROUPS_CREATED)
     objects = MemberManager()
     USERNAME_FIELD = 'email'
 
@@ -95,7 +112,7 @@ class Queue(models.Model):
         If you read this and have a better idea that enables us to use add, go ahead.
         """
         if self.is_full():
-            raise QueueFullException('You cannot add more than {} tasks to this queue'.format(self.limit))
+            raise QueueException('You cannot add more than {} tasks to this queue'.format(self.limit))
         else:
             self.tasks.add(task)
             task.last_queue = self
@@ -128,8 +145,8 @@ class Queue(models.Model):
 
 
 class Task(models.Model):
-    """
-    A task as described in README.md
+    """A task as described in README.md
+
     Pretty much self explanatory except for `added_to_queue`. I'm not sure yet
     whether to use a date here or some other method of keeping tasks in order.
     (the order they were added to a queue)

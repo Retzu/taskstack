@@ -3,7 +3,7 @@ from unittest import TestCase
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import IntegrityError
 from django.test import Client, SimpleTestCase
-from core.exceptions import QueueFullException
+from core.exceptions import QueueException
 from core.models import Queue, Task, Member, Group
 
 
@@ -91,7 +91,7 @@ class QueueTestCase(TestCase):
         self.assertEqual(member.queue.tasks.count(), member.queue.limit)
 
         # Add a another task and expect an exception
-        with self.assertRaises(QueueFullException):
+        with self.assertRaises(QueueException):
             member.queue.add_task(Task(title='Task #11', text='This task should not be accepted'))
 
         self.assertEqual(member.queue.tasks.count(), member.queue.limit)

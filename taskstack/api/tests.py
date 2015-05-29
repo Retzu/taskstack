@@ -26,9 +26,9 @@ class UtilsTest(unittest.TestCase):
         self.assertEqual(d, decoded_data)
 
 
-class ApiTest(unittest.TestCase):
+class GroupApiTest(unittest.TestCase):
 
-    """API tests"""
+    """API tests for the groups API."""
 
     def setUp(self):
         """Create two users, a group and a taskmaster"""
@@ -60,6 +60,66 @@ class ApiTest(unittest.TestCase):
         self.member_two.delete()
         self.group.delete()
 
+    def test_group_info(self):
+        """Test if we can get info about the group."""
+        self.client.login(email='api.tester@example.com', password='apitester')
+        data = utils.response_to_json(self.client.get('/api/groups/{}'.format(self.group.id)))
+
+        self.assertEqual(data['name'], self.group.name)
+        self.assertEqual(set(data['members']), {self.member.id, self.member_two.id, self.taskmaster.id})
+
+        self.client.logout()
+
+    def test_create_group(self):
+        """Test if a user can create a group."""
+        self.client.login(email='api.tester@example.com', password='apitester')
+        response = self.client.post('/api/groups', data={
+            'name': 'API created group'
+        }, format='json')
+
+        self.assertEqual(response.status_code, 201)
+
+        data = utils.response_to_json(response)
+        group = utils.response_to_json(self.client.get('/api/groups/{}'.format(data['id'])))
+
+        self.assertEqual(data, group)
+
+        self.assertEqual(group['taskmasters'], [self.member.id])
+
+    def test_create_many_groups(self):
+        """Test if a user can create more groups than allowed."""
+        self.client.login(email='api.tester@example.com', password='apitester')
+        for i in range(10):
+            self.client.post('/api/groups', data={
+                'name': 'API created group #{}'.format(i)
+            })
+
+        response = self.client.post('/api/groups', data={
+            'name': 'API created group #{}'.format(i)
+        })
+
+        self.assertEqual(response.status_code, 403)
+
+
+class UserApiTest(unittest.TestCase):
+
+    """API tests for the user API."""
+
+    def setUp(self):
+        """Create two users, a group and a taskmaster"""
+        self.client = APIClient()
+        self.group = Group.objects.create(name='First Group')
+        self.member = Member.objects.create_user(
+            email='api.tester@example.com',
+            password='apitester',
+            name='Api Tester',
+            group=self.group
+        )
+
+    def tearDown(self):
+        self.member.delete()
+        self.group.delete()
+
     def test_user_info(self):
         """Test if we can get the same user info from two different resources."""
         self.client.login(email='api.tester@example.com', password='apitester')
@@ -85,15 +145,40 @@ class ApiTest(unittest.TestCase):
 
         self.client.logout()
 
-    def test_group_info(self):
-        """Test if we can get info about the group"""
-        self.client.login(email='api.tester@example.com', password='apitester')
-        data = utils.response_to_json(self.client.get('/api/groups/{}'.format(self.group.id)))
 
-        self.assertEqual(data['name'], self.group.name)
-        self.assertEqual(set(data['members']), {self.member.id, self.member_two.id, self.taskmaster.id})
+class TaskApiTest(unittest.TestCase):
 
-        self.client.logout()
+    """API tests for the task API."""
+
+    def setUp(self):
+        """Create two users, a group and a taskmaster"""
+        self.client = APIClient()
+        self.group = Group.objects.create(name='First Group')
+        self.member = Member.objects.create_user(
+            email='api.tester@example.com',
+            password='apitester',
+            name='Api Tester',
+            group=self.group
+        )
+        self.member_two = Member.objects.create_user(
+            email='api.tester2@example.com',
+            password='apitester2',
+            name='Api Tester Two',
+            group=self.group
+        )
+        self.taskmaster = Member.objects.create_user(
+            email='api.taskmaster@example.com',
+            password='taskmaster',
+            name='Taskmaster',
+            group=self.group
+        )
+        self.group.taskmasters.add(self.taskmaster)
+
+    def tearDown(self):
+        self.taskmaster.delete()
+        self.member.delete()
+        self.member_two.delete()
+        self.group.delete()
 
     def test_create_task(self):
         """Test if we can correctly create a task that sits idly in a group."""

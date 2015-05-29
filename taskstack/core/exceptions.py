@@ -1,6 +1,11 @@
 """Custom exceptions for taskstack"""
 
 
-class QueueFullException(Exception):
+class QueueException(Exception):
 
-    """Thrown when somebody tried to add a task to an already full queue"""
+    """Exception for queue related errors."""
+
+
+class GroupException(Exception):
+
+    """Exception for group related errors."""

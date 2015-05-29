@@ -5,7 +5,8 @@ from core.models import Group, Member, Queue, Task
 class GroupSerializer(serializers.ModelSerializer):
     class Meta:
         model = Group
-        fields = ('id', 'name', 'members')
+        fields = ('id', 'name', 'taskmasters', 'members')
+        read_only_fields = ('id', 'taskmasters', 'members')
 
 
 class MemberSerializer(serializers.ModelSerializer):

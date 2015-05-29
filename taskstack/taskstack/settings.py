@@ -110,3 +110,4 @@ AUTH_USER_MODEL = 'core.Member'
 
 # Custom settings for Taskstack
 DEFAULT_QUEUE_SIZE = 10
+MAX_GROUPS_CREATED = 10
