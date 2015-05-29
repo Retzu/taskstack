@@ -10,6 +10,9 @@ class GroupSerializer(serializers.ModelSerializer):
 
 
 class MemberSerializer(serializers.ModelSerializer):
+    tasks = serializers.PrimaryKeyRelatedField(many=True, read_only=True, source='queue.tasks')
+    currentTaskId = serializers.IntegerField(read_only=True, source='current_task.id')
+
     class Meta:
         model = Member
 
@@ -17,6 +20,7 @@ class MemberSerializer(serializers.ModelSerializer):
 class QueueSerializer(serializers.ModelSerializer):
     class Meta:
         model = Queue
+        fields = ('tasks')
 
 
 class TaskSerializer(serializers.ModelSerializer):

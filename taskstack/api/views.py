@@ -1,10 +1,11 @@
 """API views."""
-from api.serializers import GroupSerializer
+from api.serializers import GroupSerializer, MemberSerializer
 from core.exceptions import GroupException
-from core.models import Group
+from core.models import Group, Member
 from rest_framework import mixins
 from rest_framework import generics
 from rest_framework import views
+from rest_framework.decorators import api_view
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.response import Response
 from rest_framework import status
@@ -37,4 +38,20 @@ class GroupList(views.APIView):
             except GroupException:
                 raise PermissionDenied()
         else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class MemberDetail(mixins.RetrieveModelMixin, generics.GenericAPIView):
+
+    """CBV for a single member."""
+
+    queryset = Member.objects.all()
+    serializer_class = MemberSerializer
+
+    def get(self, request, *args, **kwargs):
+        return self.retrieve(request, *args, **kwargs)
+
+
+@api_view(['GET'])
+def current_user(request):
+    return Response(MemberSerializer(request.user).data)

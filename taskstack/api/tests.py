@@ -5,6 +5,7 @@ from api import utils
 from core.models import Member, Group
 from rest_framework.test import APIClient
 from django.http import JsonResponse
+from taskstack import settings
 
 
 class UtilsTest(unittest.TestCase):
@@ -89,7 +90,7 @@ class GroupApiTest(unittest.TestCase):
     def test_create_many_groups(self):
         """Test if a user can create more groups than allowed."""
         self.client.login(email='api.tester@example.com', password='apitester')
-        for i in range(10):
+        for i in range(settings.MAX_GROUPS_CREATED):
             self.client.post('/api/groups', data={
                 'name': 'API created group #{}'.format(i)
             })
@@ -123,24 +124,24 @@ class UserApiTest(unittest.TestCase):
     def test_user_info(self):
         """Test if we can get the same user info from two different resources."""
         self.client.login(email='api.tester@example.com', password='apitester')
-        content = utils.response_to_json(self.client.get('/api/users/{}'.format(self.member.id)))
+        content = utils.response_to_json(self.client.get('/api/members/{}'.format(self.member.id)))
 
         self.assertEqual(content['email'], self.member.email)
         self.assertEqual(content['name'], self.member.name)
-        self.assertListEqual(content['groups'], [self.group.id])
+        self.assertEqual(content['group'], self.group.id)
 
         self.assertEqual(content['tasks'], [])
         self.assertEqual(content['currentTaskId'], None)
 
         # Test alternate route
-        content = self.client.get('/api/me')
+        content = utils.response_to_json(self.client.get('/api/me'))
 
         self.assertEqual(content['email'], self.member.email)
         self.assertEqual(content['name'], self.member.name)
-        self.assertListEqual(content['groups'], [self.group.id])
+        self.assertEqual(content['group'], self.group.id)
 
         # Test non existent user
-        response = self.client.get('/api/users/{}'.format(self.member.id))
+        response = self.client.get('/api/members/12345')
         self.assertEqual(response.status_code, 404)
 
         self.client.logout()
@@ -215,12 +216,12 @@ class TaskApiTest(unittest.TestCase):
         task_id = utils.response_to_json(self.client.post('/api/tasks', task))['id']
         self.client.put('/api/tasks/{}/assign-to'.format(task_id), {'memberId': self.member.id})
 
-        api_member = utils.response_to_json(self.client.get('/api/users/{}'.format(self.member.id)))
+        api_member = utils.response_to_json(self.client.get('/api/members/{}'.format(self.member.id)))
         self.assertEqual(api_member['currentTaskId'], task_id)
 
         self.client.put('/api/tasks/{}/done'.format(task_id))
         api_task = utils.response_to_json(self.client.get('/api/tasks/{}'.format(task_id)))
-        api_member = utils.response_to_json(self.client.get('/api/users/{}'.format(self.member.id)))
+        api_member = utils.response_to_json(self.client.get('/api/members/{}'.format(self.member.id)))
         self.assertTrue(api_task['done'])
         self.assertIsNone(api_member['currentTaskId'])
 
@@ -303,7 +304,7 @@ class TaskApiTest(unittest.TestCase):
         }
 
         # Test response if there's no task in the queue
-        response = self.client.put('/api/users/{}/work-on-next'.format(self.member.id))
+        response = self.client.put('/api/members/{}/work-on-next'.format(self.member.id))
         self.assertEqual(response.status_code, 400)
 
         # Add two tasks to the user's queue
@@ -313,17 +314,17 @@ class TaskApiTest(unittest.TestCase):
         self.client.put('/api/tasks/{}/assign-to'.format(task_id), {'memberId': self.member.id})
         self.client.put('/api/tasks/{}/assign-to'.format(task_id_two), {'memberId': self.member.id})
 
-        response = self.client.put('/api/users/{}/work-on-next'.format(self.member.id))
+        response = self.client.put('/api/members/{}/work-on-next'.format(self.member.id))
         self.assertEqual(response.status_code, 200)
 
-        content = utils.response_to_json(self.client.get('/api/users/{}'.format(self.member.id)))
+        content = utils.response_to_json(self.client.get('/api/members/{}'.format(self.member.id)))
         self.assertEqual(content['currentTaskId'], task_id)
 
         # Check if only the user can set a task as in progress
         self.client.logout()
         self.client.login(email='api.taskmaster@example.com', password='taskmaster')
 
-        response = self.client.put('/api/users/{}/work-on-next'.format(self.member.id))
+        response = self.client.put('/api/members/{}/work-on-next'.format(self.member.id))
         self.assertEqual(response.status_code, 403)
 
         self.client.logout()
