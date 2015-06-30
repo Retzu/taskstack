@@ -94,7 +94,11 @@ $ pip install -r requirements.txt
 
 Docker
 ------
-There's a script for starting a PostgreSQL Docker container that works for default values in `settings.py`.
+You can use Docker to run a PostgreSQL database during development (or in production actually). Use the official PostgreSQL cotainer like this:
+```
+$ docker run --name taskstack-database -e POSTGRES_PASSWORD=postgres -d -p 5432:5432 postgres
+```
+and then set `TASKSTACK_POSTGRES_HOST` to localhost, `TASKSTACK_POSTGRES_DATABASE`, `TASKSTACK_POSTGRES_USER` and `TASKSTACK_POSTGRES_PASSWORD` to `postgres`.
 
 Django
 ------
