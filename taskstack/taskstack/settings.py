@@ -81,9 +81,10 @@ database = {
     'PORT': '5432',
 }
 
-database['HOST'] = os.getenv('POSTGRES_DB', '127.0.0.1')
-database['USER'] = os.getenv('POSTGRES_USER', database['USER'])
-database['PASSWORD'] = os.getenv('POSTGRES_PASSWORD', database['PASSWORD'])
+database['HOST'] = os.getenv('TASKSTACK_POSTGRES_HOST', '127.0.0.1')
+database['NAME'] = os.getenv('TASKSTACK_POSTGRES_DATABASE', database['NAME'])
+database['USER'] = os.getenv('TASKSTACK_POSTGRES_USER', database['USER'])
+database['PASSWORD'] = os.getenv('TASKSTACK_POSTGRES_PASSWORD', database['PASSWORD'])
 
 DATABASES = {
     'default': database
