@@ -5,7 +5,7 @@ python:
 
 addons:
     postgresql: "9.3"
-    
+
 branches:
     only:
         - master
@@ -17,7 +17,7 @@ install:
     - pip install coverage coveralls
 
 env:
-    - POSTGRES_DB="127.0.0.1" POSTGRES_USER="postgres" POSTGRES_PASSWORD="postgres"
+    - TASKSTACK_POSTGRES_HOST="127.0.0.1" TASKSTACK_POSTGRES_USER="postgres" TASKSTACK_POSTGRES_PASSWORD="postgres"
 
 before_script:
     - psql -c 'create database taskstack;' -U postgres
