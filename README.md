@@ -70,6 +70,16 @@ I started to toy around with a mockup over at Codepen: http://codepen.io/Retzudo
 
 Technical side of things
 ========================
+Environment Variables
+---------------------
+There are several environment variables can or must set for Taskstack to run properly.
+- `TASKSTACK_POSTGRES_HOST`: Hostname or IP address of the PostgreSQL installation to use.
+- `TASKSTACK_POSTGRES_DATABASE`: Name of the database.
+- `TASKSTACK_POSTGRES_USER`: PostreSQL username.
+- `TASKSTACK_POSTGRES_PASSWORD`: PostreSQL password.
+- *optional* `TASKSTACK_SECRET_KEY`: If want to provide your own secret key for Django, use this variable. If this variable is not set, a random key will be generated. Hint: if you plan on a clustered deployment you should choose the same secret key for all deployments.
+- *optional* `TASKSTACK_DEBUG`: Set this variable to any value to enable Django's debug functionalities.
+
 Python
 ------
 Python 3 is the way to go here. It's also recommended to use virtualenv to install the things listed in `requirements.txt` using pip. It doesn't matter to Python or Django where exactly you put the virtualenv but I suggest to just create it in the directory you cloned the repo to since the directory `venv/` is already in `.gitignore`. Here's the basic procedure:
