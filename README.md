@@ -66,4 +66,6 @@ As an assignee you can only see your own queue, remove tasks, mark your current 
 
 The whole thing will be rendered only once by the backend and then we'll communicate with the server via AJAX calls and an API. Angular or React + an AJAX lib will be a thing.
 
-I started to toy around with a mockup over at Codepen: http://codepen.io/Retzudo/pen/QbweRm
+I started to toy around with a mockup over at Codepen:
+<p data-height="268" data-theme-id="0" data-slug-hash="QbweRm" data-default-tab="result" data-user="Retzudo" class='codepen'>See the Pen <a href='http://codepen.io/Retzudo/pen/QbweRm/'>Taskstack Mockup (WIP)</a> by Retzudo (<a href='http://codepen.io/Retzudo'>@Retzudo</a>) on <a href='http://codepen.io'>CodePen</a>.</p>
+<script async src="//assets.codepen.io/assets/embed/ei.js"></script>
