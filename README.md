@@ -1,8 +1,3 @@
-[![Code Health](https://landscape.io/github/Retzudo/taskstack/master/landscape.svg?style=flat)](https://landscape.io/github/Retzudo/taskstack/master)
-[![Build Status](https://travis-ci.org/Retzudo/taskstack.svg?branch=master)](https://travis-ci.org/Retzudo/taskstack)
-[![Coverage Status](https://coveralls.io/repos/Retzudo/taskstack/badge.svg?branch=master)](https://coveralls.io/r/Retzudo/taskstack?branch=master)
-Look at all the badges. *LOOK AT THEM ಠ_ಠ*.
-
 Taskstack
 =========
 Taskstack is (going to be) a really simple web app for task management.
